@@ -1,0 +1,31 @@
+{
+  "name": "core-war-web",
+  "version": "1.0.0",
+  "description": "Open source web corewar",
+  "main": "core-war-web.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node core-war-web.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MIT-Niceti/core-war-web.git"
+  },
+  "keywords": [
+    "core",
+    "war",
+    "corewar",
+    "web",
+    "node",
+    "js",
+    "node.js",
+    "cpp",
+    "c++"
+  ],
+  "author": "Nicolas Chauvin & Etienne Normand",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/MIT-Niceti/core-war-web/issues"
+  },
+  "homepage": "https://github.com/MIT-Niceti/core-war-web"
+}
