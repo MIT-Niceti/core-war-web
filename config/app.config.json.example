@@ -1,0 +1,18 @@
+{
+  "debug": true,
+  "http": {
+    "port": 8080,
+    "hostname": "localhost",
+    "session": {
+      "name": "AnAwsomeSessionName",
+      "secret": "AnAwsomeSecret"
+    }
+  },
+  "database": {
+    "name": "core_war_web",
+    "dialect": "mariadb",
+    "host": "localhost",
+    "username": "dbUsername",
+    "password": "dbPassword"
+  }
+}
