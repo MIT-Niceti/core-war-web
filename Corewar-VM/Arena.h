@@ -7,7 +7,9 @@
 
 #include "Champion.h"
 #include "Operations.h"
+#include "v8.h"
 
+int startMachine(std::vector<std::string> &champions);
 class Arena
 {
 private:
@@ -32,4 +34,3 @@ public:
 	Arena();
 	~Arena();
 };
-

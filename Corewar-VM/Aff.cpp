@@ -15,6 +15,11 @@ Aff::Aff()
 	this->types.push_back(std::vector<char>(firstArg, firstArg + sizeof(firstArg) / sizeof(char)));
 }
 
+bool Aff::load(Process *caller, std::vector<Param> &params, Arena &arena)
+{
+	return true;
+}
+
 bool Aff::execute(Process *caller, std::vector<Param> &params, Arena &arena)
 {
 	char	value1;

@@ -1,5 +1,5 @@
 module.exports = function initUserModel(libs) {
-  return libs.sequelize.define('users', {
+/*  return libs.sequelize.define('users', {
     username: {
       type: libs.Sequelize.STRING,
       allowNull: false,
@@ -16,5 +16,6 @@ module.exports = function initUserModel(libs) {
     },
   }, {
     freezeTableName: true,
-  });
+  });*/
+  return null;
 };

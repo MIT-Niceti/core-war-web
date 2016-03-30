@@ -21,9 +21,11 @@ public:
 	bool				has_index = false;
 	bool				index[4];
 	std::vector<std::vector<char>>	types;
+	int					values[3];
 	int					cycle;
 
 public:
+	virtual bool load(Process *caller, std::vector<Param> &params, Arena &arena) = 0;
 	virtual bool execute(Process *caller, std::vector<Param> &params, Arena &arena) = 0;
 	virtual ~Op(){};
 };

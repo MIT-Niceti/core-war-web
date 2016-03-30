@@ -23,20 +23,20 @@ Sti::Sti()
 	this->types.push_back(std::vector<char>(thirdArg, thirdArg + sizeof(thirdArg) / sizeof(char)));
 }
 
+bool Sti::load(Process *caller, std::vector<Param> &params, Arena &arena)
+{
+	caller->values[0] = InstructionFactory::getParamValue(params[0], arena, caller);
+	caller->values[1] = InstructionFactory::getParamValue(params[1], arena, caller);
+	caller->values[2] = InstructionFactory::getParamValue(params[2], arena, caller);
+	return true;
+}
+
 bool Sti::execute(Process *caller, std::vector<Param> &params, Arena &arena)
 {
-	__int32				value1;
-	__int32				value2;
-	__int32				value3;
 	std::vector<char>	data;
 
-	value1 = InstructionFactory::getParamValue(params[0], arena, caller);
-	value2 = InstructionFactory::getParamValue(params[1], arena, caller);
-	value3 = InstructionFactory::getParamValue(params[2], arena, caller);
-	data.push_back(value1);
-	std::cout << "Using register " << params[0].value << std::endl;
-	std::cout << "Data: " << value1 << " at " << value2 << " + " << value3 << std::endl;
-	arena.load(caller->pc + ((value2 + value3) % IDX_MOD), data);
+	data.push_back(caller->values[0]);
+	arena.load(caller->pc + ((caller->values[1] + caller->values[2]) % IDX_MOD), data);
 	return true;
 }
 

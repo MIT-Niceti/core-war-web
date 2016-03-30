@@ -19,6 +19,11 @@ Fork::Fork()
 	this->types.push_back(std::vector<char>(firstArg, firstArg + sizeof(firstArg) / sizeof(char)));
 }
 
+bool Fork::load(Process *caller, std::vector<Param> &params, Arena &arena)
+{
+	return true;
+}
+
 bool Fork::execute(Process *caller, std::vector<Param> &params, Arena &arena)
 {
 	__int32 value1;

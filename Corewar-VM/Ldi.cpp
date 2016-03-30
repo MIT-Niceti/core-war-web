@@ -22,16 +22,24 @@ Ldi::Ldi()
 	this->types.push_back(std::vector<char>(thirdArg, thirdArg + sizeof(thirdArg) / sizeof(char)));
 }
 
+bool Ldi::load(Process *caller, std::vector<Param> &params, Arena &arena)
+{
+	std::vector<char> data;
+
+	this->values[0] = InstructionFactory::getParamValue(params[0], arena, caller, 2);
+	this->values[1] = InstructionFactory::getParamValue(params[1], arena, caller);
+	data = arena.get(caller->pc + ((this->values[0] + this->values[1]) % IDX_MOD), 1);
+	this->values[2] = InstructionFactory::getDataValue(data);
+	return true;
+}
+
 bool Ldi::execute(Process *caller, std::vector<Param> &params, Arena &arena)
 {
 	__int32				value1;
 	__int32				value2;
 	std::vector<char>	data;
 
-	value1 = InstructionFactory::getParamValue(params[0], arena, caller, 2);
-	value2 = InstructionFactory::getParamValue(params[1], arena, caller);
-	data = arena.get(caller->pc + ((value1 + value2) % IDX_MOD), 1);
-	caller->registers[0] = InstructionFactory::getDataValue(data);
+	caller->registers[0] = this->values[2];
 	if (caller->registers[0] == 0)
 		caller->carry = true;
 	else

@@ -15,6 +15,7 @@ public:
 	Op					*op;
 
 	bool exec(Arena &arena);
+	bool load(Arena &arena);
 	Instruction(Op *op, std::vector<Param> params, Process *caller);
 	~Instruction();
 };

@@ -89,7 +89,6 @@ __int32	InstructionFactory::getParamValue(Arena &arena, int &index, char type)
 {
 	std::vector<char>	data;
 	std::vector<char>   fixedData;
-	__int32				ret;
 
 	if (type == REGISTER)
 		data = arena.get(index++, 1);
@@ -169,8 +168,6 @@ Instruction	*InstructionFactory::getInstruction(Arena &arena, Process *caller)
 	if (data[0] <= 0x00 || data[0] - 1 >= 16)
 	{
 		std::cout << "Bad opcode: " << (int)data[0] << std::endl;
-		if (data[0] == 0x00)
-			caller->newPc = -1;
 		return NULL;
 	}
 	op = OpTab[data[0] - 1];

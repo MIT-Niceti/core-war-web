@@ -14,6 +14,7 @@ private:
 	Instruction	*currentInstruction = NULL;
 
 public:
+	int			values[3];
 	int			newPc;
 	int			pc;
 	char		registers[16];
@@ -23,4 +24,3 @@ public:
 	Process(Champion *parent, int pc, char registers[] = 0);
 	~Process();
 };
-

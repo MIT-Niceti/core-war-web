@@ -16,6 +16,11 @@ St::St()
 	this->types.push_back(std::vector<char>(secondArg, secondArg + sizeof(secondArg) / sizeof(char)));
 }
 
+bool St::load(Process *caller, std::vector<Param> &params, Arena &arena)
+{
+	return true;
+}
+
 bool St::execute(Process *caller, std::vector<Param> &params, Arena &arena)
 {
 	char value;

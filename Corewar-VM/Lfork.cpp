@@ -18,6 +18,11 @@ Lfork::Lfork()
 	this->types.push_back(std::vector<char>(firstArg, firstArg + sizeof(firstArg) / sizeof(char)));
 }
 
+bool Lfork::load(Process *caller, std::vector<Param> &params, Arena &arena)
+{
+	return true;
+}
+
 bool Lfork::execute(Process *caller, std::vector<Param> &params, Arena &arena)
 {
 	__int32 value1;

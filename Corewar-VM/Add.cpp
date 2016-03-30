@@ -18,6 +18,11 @@ Add::Add()
 	this->types.push_back(std::vector<char>(thirdArg, thirdArg + sizeof(thirdArg) / sizeof(char)));
 }
 
+bool Add::load(Process *caller, std::vector<Param> &params, Arena &arena)
+{
+	return true;
+}
+
 bool Add::execute(Process *caller, std::vector<Param> &params, Arena &arena)
 {
 	caller->registers[params[2].value - 1] = caller->registers[params[0].value - 1]

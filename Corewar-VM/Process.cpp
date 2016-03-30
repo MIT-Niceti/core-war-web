@@ -14,10 +14,13 @@ bool Process::doCycle(Arena &arena)
 	if (this->currentInstruction == NULL)
 	{
 		this->currentInstruction = InstructionFactory::getInstruction(arena, this);
-		if (this->newPc == -1)
-			return false;
 		if (!this->currentInstruction)
+		{
+			this->pc += 1;
+			this->newPc = this->pc;
 			return true;
+		}
+		this->currentInstruction->load(arena);
 		this->lag = this->currentInstruction->op->cycle;
 	}
 	this->lag -= 1;

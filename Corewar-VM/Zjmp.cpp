@@ -4,6 +4,11 @@
 #include "Arena.h"
 
 
+bool Zjmp::load(Process *caller, std::vector<Param> &params, Arena &arena)
+{
+	return true;
+}
+
 bool Zjmp::execute(Process *caller, std::vector<Param> &params, Arena &arena)
 {
 	if (caller->carry)

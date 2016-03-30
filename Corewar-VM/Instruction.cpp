@@ -3,6 +3,10 @@
 #include "Process.h"
 #include "Arena.h"
 
+bool Instruction::load(Arena &arena)
+{
+	return this->op->load(this->caller, this->params, arena);
+}
 
 bool Instruction::exec(Arena &arena)
 {

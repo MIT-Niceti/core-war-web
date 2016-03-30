@@ -20,15 +20,21 @@ And::And()
 
 }
 
+bool And::load(Process *caller, std::vector<Param> &params, Arena &arena)
+{
+	this->values[0] = InstructionFactory::getParamValue(params[0], arena, caller, 1);
+	this->values[1] = InstructionFactory::getParamValue(params[1], arena, caller, 1);
+	this->values[2] = params[2].value - 1;
+	return true;
+}
+
 bool And::execute(Process *caller, std::vector<Param> &params, Arena &arena)
 {
 	std::vector<char> data;
 	__int32	value1;
 	__int32 value2;
 
-	value1 = InstructionFactory::getParamValue(params[0], arena, caller, 1);
-	value2 = InstructionFactory::getParamValue(params[1], arena, caller, 1);
-	caller->registers[params[2].value - 1] = value1 & value2;
+	caller->registers[this->values[2]] = this->values[0] & this->values[1];
 	if (caller->registers[params[2].value - 1] == 0)
 		caller->carry = true;
 	else

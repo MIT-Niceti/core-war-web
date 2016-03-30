@@ -14,12 +14,16 @@ Live::Live()
 	this->types.push_back(std::vector<char>(firstArg, firstArg + sizeof(firstArg) / sizeof(char)));
 }
 
+bool Live::load(Process *caller, std::vector<Param> &params, Arena &arena)
+{
+	return true;
+}
+
 bool Live::execute(Process *caller, std::vector<Param> &params, Arena &arena)
 {
 	arena.setLive(params[0].value);
 	return true;
 }
-
 
 Live::~Live()
 {
