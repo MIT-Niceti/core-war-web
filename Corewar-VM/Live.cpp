@@ -22,6 +22,7 @@ bool Live::load(Process *caller, std::vector<Param> &params, Arena &arena)
 bool Live::execute(Process *caller, std::vector<Param> &params, Arena &arena)
 {
 	arena.setLive(params[0].value);
+	arena.addEvent(caller->getParentId(), this->name, params[0].value, -1);
 	return true;
 }
 

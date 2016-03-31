@@ -28,6 +28,8 @@ bool Or::load(Process *caller, std::vector<Param> &params, Arena &arena)
 bool Or::execute(Process *caller, std::vector<Param> &params, Arena &arena)
 {
 	caller->registers[params[2].value - 1] = this->values[0] | this->values[1];
+	arena.addEvent(caller->getParentId(), this->name, caller->registers[params[2].value - 1],
+					params[2].value - 1, true);
 	if (caller->registers[params[2].value - 1] == 0)
 		caller->carry = true;
 	else

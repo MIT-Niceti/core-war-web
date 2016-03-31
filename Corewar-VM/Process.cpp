@@ -6,7 +6,14 @@
 
 void Process::fork(int pc)
 {
-//	this->parent->
+	this->parent->fork(*this, pc);
+}
+
+int Process::getParentId(void)
+{
+	if (this->parent != NULL)
+		return this->parent->id;
+	return 0;
 }
 
 bool Process::doCycle(Arena &arena)
@@ -26,15 +33,12 @@ bool Process::doCycle(Arena &arena)
 	this->lag -= 1;
 	if (this->lag == 0)
 	{
-		std::cout << "Executing " << this->currentInstruction->op->name << std::endl;
 		if (!this->currentInstruction->exec(arena))
 			return false;
 		delete this->currentInstruction;
 		this->currentInstruction = NULL;
 		this->pc = newPc;
 	}
-	else
-		std::cout << "Waiting, left: " << this->lag << std::endl;
 	return true;
 }
 

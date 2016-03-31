@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "Sub.h"
 #include "Process.h"
+#include "Arena.h"
 
 
 Sub::Sub()
@@ -28,6 +29,8 @@ bool Sub::execute(Process *caller, std::vector<Param> &params, Arena &arena)
 {
 	caller->registers[params[2].value - 1] = caller->registers[params[0].value - 1]
 		- caller->registers[params[1].value - 1];
+	arena.addEvent(caller->getParentId(), this->name, caller->registers[params[2].value - 1],
+		params[2].value - 1, true);
 	if (caller->registers[params[2].value - 1] == 0)
 		caller->carry = true;
 	else

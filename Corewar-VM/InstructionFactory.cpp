@@ -178,9 +178,6 @@ Instruction	*InstructionFactory::getInstruction(Arena &arena, Process *caller)
 		std::cout << "Bad params" << std::endl;
 		return NULL;
 	}
-	std::cout << "Read command: " << op->name << "With args: " << std::endl;;
-	for (i = 0; i < op->nbr_args; i++)
-		std::cout << "Type: " << params[i].type << " Value: " << params[i].value << std::endl;
 	return new Instruction(op, params, caller);
 }
 

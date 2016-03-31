@@ -29,6 +29,12 @@ bool	Arena::isLittleEndian()
 	return (numPtr[0] == 1);
 }
 
+bool	Arena::setReplay(std::vector<ChampionRecap> &championsRecap)
+{
+	this->replayManager.setReplay(championsRecap);
+	return true;
+}
+
 bool	Arena::loadChampions(std::vector<std::string> &champions)
 {
 	int					delta;
@@ -37,8 +43,10 @@ bool	Arena::loadChampions(std::vector<std::string> &champions)
 	int					id = 1;
 	int					pc = 0;
 	std::vector<char>	*code;
+	std::vector<ChampionRecap> championsRecap;
+	ChampionRecap		recap;
 
-	delta = (6 * 1024) / champions.size();
+	delta = (6 * 1024) / (int)champions.size();
 	for (std::vector<std::string>::iterator it = champions.begin(); it != champions.end(); ++it)
 	{
 		file.open(*it, std::ifstream::binary | std::ifstream::in);
@@ -58,12 +66,37 @@ bool	Arena::loadChampions(std::vector<std::string> &champions)
 			file.close();
 			continue;
 		}
+		recap.code = code;
+		recap.entryPoint = pc;
+		recap.name = header.name;
+		recap.id = id;
+		recap.size = header.prog_size;
+		championsRecap.push_back(recap);
 		this->champions.push_back(Champion(header, code, id++, pc));
+		this->champions.back().addProcess(pc);
 		load(pc, *code);
 		file.close();
 		pc += delta;
 	}
+	this->setReplay(championsRecap);
 	return true;
+}
+
+bool Arena::addEvent(int championId, std::string &op, int wrote, int at, bool reg)
+{
+	std::string name = "";
+
+	for (std::list<Champion>::iterator it = champions.begin(); it != champions.end(); ++it)
+	{
+		if (it->id == championId)
+		{
+			name = it->getName();
+			break;
+		}
+	}
+	if (name == "")
+		return false;
+	return this->replayManager.addEvent(this->cycle_total, championId, name, op, wrote, at, reg);
 }
 
 void	Arena::setLive(int id)
@@ -73,7 +106,7 @@ void	Arena::setLive(int id)
 		if (it->id == id)
 		{
 			it->live = true;
-			std::cout << "Player " << it->id << " is alive!" << std::endl;
+			//std::cout << "Player " << it->id << " is alive!" << std::endl;
 		}
 	}
 }
@@ -102,6 +135,14 @@ bool	Arena::checkLive()
 	return true;
 }
 
+bool	Arena::ending()
+{
+	this->dumpArena();
+	std::cout << "Champion " << champions.begin()->getName() << " with id "
+				<< champions.begin()->id << " has won!" << std::endl;
+	return true;
+}
+
 bool	Arena::start(void)
 {
 	int	i = 0;
@@ -114,22 +155,19 @@ bool	Arena::start(void)
 				std::cout << "Champion number " << it->id << " died by doing shit!" << std::endl;
 				champions.erase(it);
 				if (champions.size() == 1)
-					return true;
+					return ending();
 			}
 		}
 		++this->cycle_total;
-		if (this->cycle_total % 30 == 0)
-		{
-			dumpArena();
-			getchar();
-		}
 		if (this->cycle_total % this->cycle_to_die == 0)
+		{
 			if (checkLive() == false)
-				return true;
+				return ending();
+		}
 		if (champions.size() == 1)
-			return true;
+			return ending();
 	}
-	return true;
+	return ending();
 }
 
 bool	Arena::setupArena(std::vector<std::string> &champions)

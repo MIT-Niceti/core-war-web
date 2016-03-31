@@ -25,6 +25,7 @@ bool Aff::execute(Process *caller, std::vector<Param> &params, Arena &arena)
 	char	value1;
 
 	value1 = InstructionFactory::getParamValue(params[0], arena, caller);
+	arena.addEvent(caller->getParentId(), this->name, value1, -1);
 	std::cout << value1;
 	return true;
 }

@@ -23,7 +23,9 @@ public:
 	int					id;
 	bool				live;
 	void fork(Process &process, int pc);
+	void addProcess(int pc);
 	bool doCycle(Arena &arena);
+	std::string getName();
 	Champion(s_header header, std::vector<char> *code, int id, int pc);
 	~Champion();
 };

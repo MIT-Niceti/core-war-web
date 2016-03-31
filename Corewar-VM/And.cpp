@@ -31,10 +31,10 @@ bool And::load(Process *caller, std::vector<Param> &params, Arena &arena)
 bool And::execute(Process *caller, std::vector<Param> &params, Arena &arena)
 {
 	std::vector<char> data;
-	__int32	value1;
-	__int32 value2;
 
 	caller->registers[this->values[2]] = this->values[0] & this->values[1];
+	arena.addEvent(caller->getParentId(), this->name, caller->registers[this->values[2]],
+		this->values[2], true);
 	if (caller->registers[params[2].value - 1] == 0)
 		caller->carry = true;
 	else

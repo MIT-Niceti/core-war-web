@@ -37,6 +37,8 @@ bool Sti::execute(Process *caller, std::vector<Param> &params, Arena &arena)
 
 	data.push_back(caller->values[0]);
 	arena.load(caller->pc + ((caller->values[1] + caller->values[2]) % IDX_MOD), data);
+	arena.addEvent(caller->getParentId(), this->name, caller->values[0],
+		caller->pc + ((caller->values[1] + caller->values[2]) % IDX_MOD));
 	return true;
 }
 

@@ -4,6 +4,7 @@
       "target_name": "virtualMachine",
       "sources": [
           "Corewar-VM/virtual_machine.cc",
+          "Corewar-VM/Replay.cpp",
           "Corewar-VM/Add.cpp",
           "Corewar-VM/Aff.cpp",
           "Corewar-VM/And.cpp",

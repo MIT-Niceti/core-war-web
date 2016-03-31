@@ -31,9 +31,14 @@ bool St::execute(Process *caller, std::vector<Param> &params, Arena &arena)
 	{
 		data.push_back(value);
 		arena.load(caller->pc + (params[1].value % IDX_MOD), data);
+		arena.addEvent(caller->getParentId(), this->name, value, caller->pc + (params[1].value % IDX_MOD));
 	}
 	else if (params[1].type == REGISTER)
+	{
 		caller->registers[params[1].value - 1] = value;
+		arena.addEvent(caller->getParentId(), this->name, caller->registers[params[1].value - 1],
+			params[1].value - 1, true);
+	}
 	return true;
 }
 

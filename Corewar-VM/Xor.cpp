@@ -28,10 +28,10 @@ bool Xor::load(Process *caller, std::vector<Param> &params, Arena &arena)
 bool Xor::execute(Process *caller, std::vector<Param> &params, Arena &arena)
 {
 	std::vector<char> data;
-	__int32	value1;
-	__int32 value2;
 
 	caller->registers[params[2].value - 1] = this->values[0] ^ this->values[1];
+	arena.addEvent(caller->getParentId(), this->name, caller->registers[params[2].value - 1],
+		params[2].value - 1, true);
 	if (caller->registers[params[2].value - 1] == 0)
 		caller->carry = true;
 	else

@@ -35,11 +35,10 @@ bool Ldi::load(Process *caller, std::vector<Param> &params, Arena &arena)
 
 bool Ldi::execute(Process *caller, std::vector<Param> &params, Arena &arena)
 {
-	__int32				value1;
-	__int32				value2;
 	std::vector<char>	data;
 
 	caller->registers[0] = this->values[2];
+	arena.addEvent(caller->getParentId(), this->name, caller->registers[0], 0, true);
 	if (caller->registers[0] == 0)
 		caller->carry = true;
 	else

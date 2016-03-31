@@ -14,8 +14,9 @@ bool Zjmp::execute(Process *caller, std::vector<Param> &params, Arena &arena)
 	if (caller->carry)
 	{
 		caller->pc = caller->pc + (params[0].value % IDX_MOD);
+		arena.addEvent(caller->getParentId(), this->name, -1, caller->pc);
 		caller->newPc = caller->pc;
-		std::cout << "Jumping at " << caller->pc << std::endl;
+//		std::cout << "Jumping at " << caller->pc << std::endl;
 	}
 	else
 		std::cout << "Carry not set." << std::endl;

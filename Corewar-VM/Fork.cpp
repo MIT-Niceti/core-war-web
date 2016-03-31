@@ -27,8 +27,10 @@ bool Fork::load(Process *caller, std::vector<Param> &params, Arena &arena)
 bool Fork::execute(Process *caller, std::vector<Param> &params, Arena &arena)
 {
 	__int32 value1;
+	std::string test;
 
 	value1 = InstructionFactory::getParamValue(params[0], arena, caller);
+	arena.addEvent(caller->getParentId(), this->name, -1, caller->pc + (value1 % IDX_MOD));
 	caller->fork(caller->pc + (value1 % IDX_MOD));
 	return true;
 }

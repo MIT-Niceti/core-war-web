@@ -34,13 +34,14 @@ bool Ld::load(Process *caller, std::vector<Param> &params, Arena &arena)
 
 bool Ld::execute(Process *caller, std::vector<Param> &params, Arena &arena)
 {
-	__int32				value;
-
-	if (value == 0)
+	caller->registers[params[1].value - 1] = caller->values[0];
+	if (caller->values[0] == 0)
 		caller->carry = true;
 	else
 		caller->carry = false;
-	caller->registers[params[1].value - 1] = caller->values[0];
+
+	arena.addEvent(caller->getParentId(), this->name, caller->registers[params[1].value - 1],
+		params[1].value - 1, true);
 	return true;
 }
 

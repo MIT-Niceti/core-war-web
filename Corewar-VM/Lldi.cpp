@@ -36,6 +36,7 @@ bool Lldi::load(Process *caller, std::vector<Param> &params, Arena &arena)
 bool Lldi::execute(Process *caller, std::vector<Param> &params, Arena &arena)
 {
 	caller->registers[0] = this->values[2];
+	arena.addEvent(caller->getParentId(), this->name, caller->registers[0],	0, true);
 	if (caller->registers[0] == 0)
 		caller->carry = true;
 	else
