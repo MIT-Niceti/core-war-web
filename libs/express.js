@@ -1,13 +1,20 @@
-module.exports = function initExpress(libs) {
-  libs.express = require('express');
-  libs.app = libs.express();
+module.exports = function initExpress(conf) {
+  // include libraries
+  const express = require('express');
+  const cookieParser = require('cookie-parser');
+  const bodyParser = require('body-parser');
+  const morgan = require('morgan');
 
-  // Init global middleware
-  libs.cookieParser = require('cookie-parser');
-  libs.bodyParser = require('body-parser');
-  libs.morgan = require('morgan');
+  // init express
+  const app = express();
 
-  libs.app.use(libs.morgan('combined'));
-  libs.app.use(libs.cookieParser());
-  libs.app.use(libs.bodyParser.urlencoded({ extended: true }));
+  // init global middleware
+  app.use(cookieParser(conf.secret));
+  app.use(bodyParser.urlencoded({ extended: true }));
+  app.use(morgan('combined'));
+
+  require('./ejs')(app, conf);
+  require('./mongoose.session')(app, conf);
+
+  return app;
 };

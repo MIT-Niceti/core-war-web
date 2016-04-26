@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Core War Web | User Profile POC</title>
+  </head>
+  <body>
+    <% if (user) { %>
+      <h1>Update your profile</h1>
+      <p>Hey <i><%= user.name %></i></p>
+      <form action="/update_user_profile" method="post">
+        <div>
+          <label>Username :</label>
+          <input type="text" name="username" placeholder="<%= user.name %>" />
+        </div>
+        <div>
+          <label>Email :</label>
+          <input type="email" name="email" placeholder="<%= user.email %>" />
+        </div>
+        <div>
+          <label>Password :</label>
+          <input type="password" name="password" placeholder="●●●●●●●●" />
+        </div>
+        <div>
+          <label>Confirmation :</label>
+          <input type="password" name="confirmation" placeholder="●●●●●●●●" />
+        </div>
+        <div>
+          <button type="submit">Update your profile</button>
+        </div>
+      </form>
+      <p>Get back to <a href="/index.html">main page</a></p>
+    <% } else { %>
+      <h1>An error occured</h1>
+        <p>Go back to the <a href="/index.html">main page</a></p>
+    <% } %>
+  </body>
+</html>

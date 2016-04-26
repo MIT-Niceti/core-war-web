@@ -4,8 +4,9 @@
 const conf = require('./config/app.config.json');
 conf.rootFolder = __dirname;
 
-// Include and initialize node libraries
-const libs = require('./libs')(conf);
+const app = require('./libs/express')(conf);
+require('./routes')(app, conf);
 
-// Load controllers
-require('./controllers')(conf, libs);
+const server = app.listen(conf.http.port, function () {
+  console.log('Http server listening on port ' + conf.http.port);
+});

@@ -1,1 +1,53 @@
-hello
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Core War Web | Index</title>
+  </head>
+  <body>
+    <h1>Core War Web - Index</h1>
+    <% if (user) { %>
+      <p>Hey <i><%= user.name %></i>, click on the link to <a href="/logout">log out</a></p>
+      <p>You can also access your <a href="/user_profile.html">user profile</a></p>
+    <% } else { %>
+      <h2>Already have an account?</h2>
+        Log into the system by filling the following form:
+      <form action="/login" method="post">
+        <div>
+          <label>Username :</label>
+          <input type="text" name="username" />
+        </div>
+        <div>
+          <label>Password :</label>
+          <input type="password" name="password" />
+        </div>
+        <div>
+          <button type="submit">Login</button>
+        </div>
+      </form>
+      <h2>Nope? Do you want to create one?</h2>
+      Create an account in our system by filling the following form:
+      <form action="/sign-up" method="post">
+        <div>
+          <label>Username :</label>
+          <input type="text" name="username" />
+        </div>
+        <div>
+          <label>Email :</label>
+          <input type="email" name="email" />
+        </div>
+        <div>
+          <label>Password :</label>
+          <input type="password" name="password" />
+        </div>
+        <div>
+          <label>Confirmation :</label>
+          <input type="password" name="confirmation" />
+        </div>
+        <div>
+          <button type="submit">Sign-up</button>
+        </div>
+      </form>
+    <% } %>
+  </body>
+</html>
