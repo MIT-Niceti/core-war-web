@@ -35,6 +35,8 @@ Http server listening on port 8080
 ```
 
 ### Web service access
-Take a look again in `config/app.config.json`, and note the value of the fields `http.hostname` and `http.port`.
-Open your web browser, and enter an address following this syntax:  
-Add the value of `http.hostname`, plus the colon character `:`, then the value of `http.port`, and press Enter !
+#### Default address
+The default url address is `http://localhost:8080`
+
+#### Custom address
+Copy/paste the default address in your browser. Take a look in `config/app.config.json`, and use the value of the fields `http.hostname` and `http.port`, to respectively replace `localhost` and `8080`.
