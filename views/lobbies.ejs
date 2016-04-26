@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Core War Web | Game Lobbies</title>
+  </head>
+  <body>
+    <% if (user) { %>
+      <h1>Game lobbies</h1>
+      <p>Hey <i><%= user.name %></i>, you will be soon able to create a lobby and start a game from this page</p>
+      <p>Get back to <a href="/index.html">main page</a></p>
+    <% } else { %>
+      <h1>An error occured</h1>
+        <p>Go back to the <a href="/index.html">main page</a></p>
+    <% } %>
+  </body>
+</html>
