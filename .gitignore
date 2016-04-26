@@ -1,3 +1,11 @@
 config/*.json
 node_modules
+npm-debug.log
+cpp/build
+
 *~
+*.obj
+*.gypi
+*.map
+*.tlog
+*.vcxproj

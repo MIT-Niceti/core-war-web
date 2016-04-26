@@ -5,6 +5,7 @@
   "main": "core-war-web.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "install": "cd ./cpp && node-gyp configure && node-gyp build",
     "start": "node core-war-web.js"
   },
   "repository": {
