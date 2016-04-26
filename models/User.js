@@ -1,20 +1,23 @@
-module.exports = function initUserModel(libs) {
-  return libs.sequelize.define('users', {
-    username: {
-      type: libs.Sequelize.STRING,
-      allowNull: false,
-      unique: true,
-    },
-    password: {
-      type: libs.Sequelize.STRING,
-      allowNull: false,
-    },
-    active: {
-      type: libs.Sequelize.BOOLEAN,
-      allowNull: false,
-      defaultValue: false,
-    },
-  }, {
-    freezeTableName: true,
-  });
-};
+const mongoose = require('../libs/mongoose');
+const Schema = mongoose.Schema;
+
+const userSchema = new Schema({
+  name: {
+    type: String,
+    required: true,
+  },
+  password: {
+    type: String,
+    required: true,
+  },
+  email: {
+    type: String,
+    required: true,
+  },
+});
+
+userSchema.plugin(mongoose.autoIncrement.plugin, { model: 'user', field: 'id' });
+
+const userModel = mongoose.model('user', userSchema);
+
+module.exports = userModel;

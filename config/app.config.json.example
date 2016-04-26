@@ -9,9 +9,9 @@
     }
   },
   "database": {
-    "name": "core_war_web",
-    "dialect": "mariadb",
+    "name": "core-war-web",
     "host": "localhost",
+    "port": 27017,
     "username": "dbUsername",
     "password": "dbPassword"
   }
