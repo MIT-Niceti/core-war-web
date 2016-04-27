@@ -2,14 +2,14 @@
 <html>
   <head>
     <meta charset="UTF-8">
-    <title>Core War Web | Game Lobbies</title>
+    <title>Core War Web | Arena</title>
   </head>
   <body>
     <% if (user) { %>
-      <h1>Game lobbies</h1>
-      <p>Hey <i><%= user.name %></i>, you will be soon able to create a lobby (an arena) and start a game from this page</p>
-      <p>You can temporary go to an hard coded version of the <a href="/arena.html">arena</a></p>
+      <h1>Arena</h1>
+      <p>Hey <i><%= user.name %></i>, you will be soon able to watch your champions fighting with others from this page</p>
       <p>Get back to <a href="/index.html">main page</a></p>
+      <p><%= arena %></p>
     <% } else { %>
       <h1>An error occured</h1>
         <p>Go back to the <a href="/index.html">main page</a></p>
