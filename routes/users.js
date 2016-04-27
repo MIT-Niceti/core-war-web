@@ -1,7 +1,7 @@
 const ensureLoggedIn = require('../libs/connectEnsureLogin').ensureLoggedIn;
 const ensureLoggedOut = require('../libs/connectEnsureLogin').ensureLoggedOut;
 
-const usersManager = require('../managers/users');
+const usersController = require('../controllers/users');
 
 module.exports = function initUsersRoutes(app, conf) {
   const passport = require('../libs/passport')(app);
@@ -19,7 +19,7 @@ module.exports = function initUsersRoutes(app, conf) {
   app.get('/user_profile.html',
     ensureLoggedIn('/index.html'),
     function (req, res) {
-      usersManager.retrieveUserProfile(req, res)
+      usersController.retrieveUserProfile(req, res)
       .then(function (data) {
         res.render('user_profile', data);
       });
@@ -52,7 +52,7 @@ module.exports = function initUsersRoutes(app, conf) {
 
   app.post('/sign-up',
   ensureLoggedOut('/index.html'),
-    usersManager.createUser({
+    usersController.createUser({
       successRedirect: '/index.html',
       failureRedirect: '/index.html',
     })
@@ -60,7 +60,7 @@ module.exports = function initUsersRoutes(app, conf) {
 
   app.post('/update_user_profile',
   ensureLoggedIn('/index.html'),
-    usersManager.updateUserProfile({
+    usersController.updateUserProfile({
       successRedirect: '/user_profile.html',
       failureRedirect: '/user_profile.html',
     })

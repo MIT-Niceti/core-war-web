@@ -1,26 +1,20 @@
-const UserModel = require('../models/User');
-
-module.exports.findAll = function () {
-  return UserModel.findAll({
-    attributes: ['id', 'name', 'email'],
-  });
-};
+const UsersModel = require('../models/Users');
 
 module.exports.findById = function (id) {
-  return UserModel.findOne({ id: id });
+  return UsersModel.findOne({ _id: id });
 };
 
 module.exports.findByName = function (name) {
-  return UserModel.findOne({ name: name });
+  return UsersModel.findOne({ name: name });
 };
 
 module.exports.findByEmail = function (email) {
-  return UserModel.findOne({ email: email });
+  return UsersModel.findOne({ email: email });
 };
 
 module.exports.createUser = function (name, email, password) {
   return new Promise(function (fulfill, reject) {
-    UserModel.create({ name: name, email: email, password: password }, function (err, user) {
+    UsersModel.create({ name: name, email: email, password: password }, function (err, user) {
       if (err) {
         reject(err);
       } else {
