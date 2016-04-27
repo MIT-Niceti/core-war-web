@@ -26,7 +26,7 @@ bool Fork::load(Process *caller, std::vector<Param> &params, Arena &arena)
 
 bool Fork::execute(Process *caller, std::vector<Param> &params, Arena &arena)
 {
-	__int32 value1;
+	int32_t value1;
 	std::string test;
 
 	value1 = InstructionFactory::getParamValue(params[0], arena, caller);

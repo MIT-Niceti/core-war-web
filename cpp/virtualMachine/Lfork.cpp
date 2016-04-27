@@ -25,7 +25,7 @@ bool Lfork::load(Process *caller, std::vector<Param> &params, Arena &arena)
 
 bool Lfork::execute(Process *caller, std::vector<Param> &params, Arena &arena)
 {
-	__int32 value1;
+	int32_t value1;
 
 	value1 = InstructionFactory::getParamValue(params[0], arena, caller);
 	arena.addEvent(caller->getParentId(), this->name, -1, caller->pc + value1);

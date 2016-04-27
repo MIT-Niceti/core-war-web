@@ -1,6 +1,6 @@
-// stdafx.h : fichier Include pour les fichiers Include système standard,
-// ou les fichiers Include spécifiques aux projets qui sont utilisés fréquemment,
-// et sont rarement modifiés
+// stdafx.hï¿½: fichier Include pour les fichiers Include systï¿½me standard,
+// ou les fichiers Include spï¿½cifiques aux projets qui sont utilisï¿½s frï¿½quemment,
+// et sont rarement modifiï¿½s
 //
 
 #pragma once
@@ -8,13 +8,11 @@
 #include "targetver.h"
 
 #include <stdio.h>
-#include <tchar.h>
 #include <list>
 #include <vector>
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <cstdint>
 
-
-
-// TODO: faites référence ici aux en-têtes supplémentaires nécessaires au programme
+// TODO: faites rï¿½fï¿½rence ici aux en-tï¿½tes supplï¿½mentaires nï¿½cessaires au programme

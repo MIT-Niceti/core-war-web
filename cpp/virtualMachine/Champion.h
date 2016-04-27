@@ -6,7 +6,7 @@ class Arena;
 
 struct s_header
 {
-	int		magic;
+	uint32_t		magic;
 	char	name[128 + 1];
 	int		prog_size;
 	char	comment[2048 + 1];
@@ -29,4 +29,3 @@ public:
 	Champion(s_header header, std::vector<char> *code, int id, int pc);
 	~Champion();
 };
-

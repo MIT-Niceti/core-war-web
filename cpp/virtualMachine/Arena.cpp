@@ -1,6 +1,11 @@
 #include "stdafx.h"
 #include "Arena.h"
-#include <intrin.h>
+
+#ifdef _WIN32
+# include <intrin.h>
+#else // !_WIN32
+# define _byteswap_ulong __builtin_bswap64
+#endif // !_WIN32
 
 Op *OpTab[16] =
 {
@@ -145,7 +150,6 @@ bool	Arena::ending()
 
 bool	Arena::start(void)
 {
-	int	i = 0;
 	while (42)
 	{
 		for (std::list<Champion>::iterator it = champions.begin(); it != champions.end(); ++it)

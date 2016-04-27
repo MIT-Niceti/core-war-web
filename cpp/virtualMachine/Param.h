@@ -5,6 +5,5 @@ public:
 	Param();
 	~Param();
 	char	type;
-	__int32		value;
+	int32_t		value;
 };
-

@@ -55,7 +55,7 @@ char InstructionFactory::getParamType(Op *op, int param, char paramByte)
 	return 0;
 }
 
-__int32 bitsToInt(__int32 &result, const char* bits, bool little_endian = true)
+int32_t bitsToInt(int32_t &result, const char* bits, bool little_endian = true)
 {
 	result = 0;
 	if (little_endian)
@@ -69,10 +69,10 @@ __int32 bitsToInt(__int32 &result, const char* bits, bool little_endian = true)
 	return result;
 }
 
-__int32 InstructionFactory::getDataValue(std::vector<char> &data)
+int32_t InstructionFactory::getDataValue(std::vector<char> &data)
 {
 	std::vector<char>   fixedData;
-	__int32				ret;
+	int32_t				ret;
 
 	if (data.size() < 4)
 	{
@@ -85,7 +85,7 @@ __int32 InstructionFactory::getDataValue(std::vector<char> &data)
 		return bitsToInt(ret, data.data(), false);
 }
 
-__int32	InstructionFactory::getParamValue(Arena &arena, int &index, char type)
+int32_t	InstructionFactory::getParamValue(Arena &arena, int &index, char type)
 {
 	std::vector<char>	data;
 	std::vector<char>   fixedData;
@@ -111,7 +111,6 @@ bool InstructionFactory::getParams(Arena &arena, int &index, std::vector<Param> 
 {
 	char	paramByte = 0;
 	Param	param;
-	char	type = 0;
 	int		i = 0;
 
 	if (op->paramByte)
@@ -136,9 +135,9 @@ bool InstructionFactory::getParams(Arena &arena, int &index, std::vector<Param> 
 	return true;
 }
 
-__int32 InstructionFactory::getParamValue(Param &param, Arena &arena, Process *caller, int size)
+int32_t InstructionFactory::getParamValue(Param &param, Arena &arena, Process *caller, int size)
 {
-	__int32	ret = 0;
+	int32_t	ret = 0;
 	std::vector<char> data;
 
 	if (param.type == REGISTER)
@@ -155,7 +154,6 @@ __int32 InstructionFactory::getParamValue(Param &param, Arena &arena, Process *c
 
 Instruction	*InstructionFactory::getInstruction(Arena &arena, Process *caller)
 {
-	int					i = 0;
 	std::vector<char>	data;
 	std::vector<Param>	params;
 	Op					*op;
