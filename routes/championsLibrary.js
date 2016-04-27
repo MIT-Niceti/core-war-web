@@ -3,14 +3,14 @@ const express = require('express');
 const ensureLoggedIn = require('../libs/connectEnsureLogin').ensureLoggedIn;
 const ensureLoggedOut = require('../libs/connectEnsureLogin').ensureLoggedOut;
 
-module.exports = function initLobbiesRoutes(app, conf) {
+module.exports = function initChampionsLibraryRoutes(app, conf) {
   //
   //// GET requests
 
-  app.get('/lobbies.html',
+  app.get('/champions_library.html',
   ensureLoggedIn('/index.html'),
     function (req, res) {
-      res.render('lobbies', { user: req.user });
+      res.render('champions_library', { user: req.user });
     }
   );
 };
