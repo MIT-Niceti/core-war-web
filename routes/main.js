@@ -1,6 +1,6 @@
 const express = require('express');
 
-module.exports = function initHttpRoutes(app, conf) {
+module.exports = function initMainHttpRoutes(app, conf) {
   //
   //// GET requests
 
