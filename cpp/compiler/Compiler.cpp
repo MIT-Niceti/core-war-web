@@ -1,8 +1,7 @@
 #include "Compiler.hh"
-#include "Tokenizer.hh"
+#include "SyntacticAnalyzer.hh"
 #include <string>
 #include <iostream>
-#include <vector>
 
 Compiler::Compiler(const std::string &inputFile)
     : _inputFile(inputFile)
@@ -15,26 +14,23 @@ Compiler::~Compiler()
 
 void Compiler::run()
 {
+    SyntacticAnalyzer analyzer;
+    void *tree = NULL;
+
+    _runTokenizer();
+    tree = analyzer.createTree(_tokenizedFile);
+    (void)tree;
+}
+
+void Compiler::_runTokenizer()
+{
     Tokenizer tokenizer;
-    std::vector<std::vector<Tokenizer::Token> *> tokenizedFile;
     std::vector<Tokenizer::Token> *tokenizedLine = NULL;
     std::string line;
 
     _openInputFile();
     while (std::getline(_inputFileStream, line) && (tokenizedLine = tokenizer.tokenizeLine(line)))
-    {
-        // std::cout << "WAZA" << std::endl;
-        tokenizedFile.push_back(tokenizedLine);
-
-        unsigned int i = 0;
-        while (i != tokenizedLine->size())
-        {
-            std::cout << "Token type: " << (*tokenizedLine)[i].type << " | "
-                << "Raw token string: \"" << (*tokenizedLine)[i].raw << "\"" << std::endl;
-            ++i;
-        }
-    }
-    // std::cout << "AU REVOIR" << std::endl;
+        _tokenizedFile.push_back(tokenizedLine);
     _closeInputFile();
 }
 

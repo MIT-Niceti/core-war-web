@@ -4,10 +4,12 @@ CXX		=	g++
 
 RM		=	rm -f
 
-SRCS		=	main.cpp	\
-			Compiler.cpp	\
-			Tokenizer.cpp	\
-			Token.cpp
+SRCS		=	main.cpp		\
+			Compiler.cpp		\
+			Tokenizer.cpp		\
+			Token.cpp		\
+			SyntacticAnalyzer.cpp	\
+			BNFRule.cpp
 
 OBJS		=	$(SRCS:.cpp=.o)
 

@@ -36,7 +36,6 @@ void Tokenizer::_fillTokensList(const char *line, int &lineIndex, std::vector<To
             tokens->push_back(Token());
         tokens->back().type = static_cast<Token::eType>(i);
         tokens->back().raw.push_back(line[lineIndex]);
-        // std::cout << static_cast<Token::eType>(i) << std::endl;
     }
     else
     {
