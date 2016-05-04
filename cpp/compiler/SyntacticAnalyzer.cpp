@@ -5,57 +5,59 @@ const std::vector<std::vector<std::string>> SyntacticAnalyzer::_grammar =
 {
     { "decimalNumber", "=", "^", "DIGITS" },
     { "alphaWord", "=", "^", "ALPHABET" },
-    { "wordSeparator", "=", "^", "WORD_SEPARATOR" },
+    { "wordSeparator", "=", "^", "WORD_SEPARATORS" },
     { "blankSpace", "=", "^", "BLANK_SPACE" },
     { "doubleQuotes", "=", "^", "DOUBLE_QUOTES" },
     { "metaChar", "=", "^", "META" },
     { "labelChar", "=", "^", "LABEL" },
     { "directChar", "=", "^", "DIRECT" },
-    { "parameterSeparatorChar", "^", "PARAMETER_SEPARATOR" },
+    { "parameterSeparatorChar", "=", "^", "PARAMETER_SEPARATOR" },
     { "commentChar", "=", "^", "COMMENT" },
 
     { "anyChar", "=", "~" },
 
+    { "optionalBlankSpace", "=", "blankSpace", "0*1" },
+
     { "alphaNumericWord", "=", "(", "decimalNumber", "|", "alphaWord", "|", "wordSeparator", ")", "1*x" },
 
     { "acceptableQuotedStr", "=", "(", "decimalNumber", "|", "alphaWord", "|", "blankSpace", "|", "wordSeparator", ")", "0*x" },
-    { "quotedStr", "=", "(", "doubleQuotes", "+", "acceptableQuotedStr", "+", ")", "1*1" },
+    { "quotedStr", "=", "doubleQuotes", "+", "acceptableQuotedStr", "doubleQuotes" },
 
-    { "nameStr", "=", "'name'", "1*1" },
-    { "commentStr", "=", "'comment'", "1*1" },
-    { "metaName", "=", "(", "metaChar", "+", "nameStr", ")", "1*1" },
-    { "metaComment", "=", "(", "metaChar", "+", "commentStr", ")", "1*1" },
+    { "nameStr", "=", "'name'" },
+    { "commentStr", "=", "'comment'" },
+    { "metaName", "=", "metaChar", "+", "nameStr" },
+    { "metaComment", "=", "metaChar", "+", "commentStr" },
 
     { "language", "#", "validLine", "0*1" },
-    { "validLine", "=", "(", "(", "blankSpace", "0*1", ")", "+", "(", "declarativeLine", "|", "commentedLine", ")", ")", "1*1" },
+    { "validLine", "=", "optionalBlankSpace", "+", "(", "declarativeLine", "|", "commentedLine", ")" },
 
-    { "declarativeLine", "=", "(", "assemblyDeclaration", "+", "(", "blankSpace", "0*1" ")", "+", "(", "developerComment", "0*1", ")", ")", "1*1" },
-    { "commentedLine", "=", "developerComment", "1*1" },
+    { "declarativeLine", "=", "assemblyDeclaration", "+", "optionalBlankSpace", "+", "(", "developerComment", "0*1", ")" },
+    { "commentedLine", "=", "developerComment" },
 
-    { "developerComment", "=", "(", "commentChar", "+", "anyChar", ")", "1*1" },
+    { "developerComment", "=", "commentChar", "+", "anyChar" },
 
-    {"metaNameDeclaration", "=", "(", "metaName", "blankSpace", "quotedStr", ")", "1*1" },
-    {"metaCommentDeclaration", "=", "(", "metaComment", "blankSpace", "quotedStr", ")", "1*1" },
+    { "metaNameDeclaration", "=", "metaName", "+", "blankSpace", "+", "quotedStr" },
+    { "metaCommentDeclaration", "=", "metaComment", "+", "blankSpace", "+", "quotedStr" },
 
-    { "assemblyDeclaration", "=", "(", "metaNameDeclaration", "+", "metaCommentDeclaration", "+", "labelDeclaration", "+", "instructionDeclaration", "+", "labelAndInstructionDeclaration", ")", "1*1" },
+    { "assemblyDeclaration", "=", "metaNameDeclaration", "|", "metaCommentDeclaration", "|", "labelDeclaration", "|", "instructionDeclaration", "|", "labelAndInstructionDeclaration" },
 
-    { "instructionDeclaration", "=", "(", "instructionName", "(", "blankSpace", "0*1", ")", "instructionParameters", ")", "1*1" },
-    { "labelAndInstructionDeclaration", "=", "(", "labelDeclaration", "(", "blankSpace", "0*1", ")", "instructionDeclaration", ")", "1*1" },
+    { "instructionDeclaration", "=", "instructionName", "+", "optionalBlankSpace", "+", "instructionParameters" },
+    { "labelAndInstructionDeclaration", "=", "labelDeclaration", "+", "optionalBlankSpace", "+", "instructionDeclaration" },
 
-    { "firstParameter", "=", "instructionParameter", "1*1" },
-    { "nthParameter", "=", "(", "parameterSeparatorChar", "+", "(", "blankSpace", "0*1", ")", "+", "instructionParameter", ")", "1*1" },
-    { "instructionParameters", "=", "(", "(", "(", "firstParameter", "1*1", ")", "(", "blankSpace", "0*1", ")", "(", "nthParameter", "1*1", ")", "0*x", ")", ")", "1*1" },
+    { "firstParameter", "=", "instructionParameter" },
+    { "nthParameter", "=", "parameterSeparatorChar", "+", "optionalBlankSpace", "+", "instructionParameter" },
+    { "instructionParameters", "=", "firstParameter", "+", "(", "(", "optionalBlankSpace", "+", "nthParameter", ")", "0*x", ")" },
 
-    { "instructionParameter", "=", "(", "registerParameter", "+", "directValueParameter", "+", "indirectValueParameter", ")", "1*1" },
+    { "instructionParameter", "=", "registerParameter", "+", "directValueParameter", "+", "indirectValueParameter" },
 
-    { "registerParameter", "=", "(", "'r'", "+", "decimalNumber", ")", "1*1" },
-    { "directValueParameter", "=", "(", "directChar", "+", "(", "blankSpace", "0*1", ")", "+", "(", "decimalNumber", "|", "labelValue", ")", ")", "1*1" },
-    { "indirectValueParameter", "=", "(", "decimalNumber", "|", "labelValue", ")", "1*1" },
+    { "registerParameter", "=", "'r'", "+", "decimalNumber" },
+    { "directValueParameter", "=", "directChar", "+", "optionalBlankSpace", "+", "(", "decimalNumber", "|", "labelValue", ")" },
+    { "indirectValueParameter", "=", "decimalNumber", "|", "labelValue" },
 
-    { "labelDeclaration", "=", "(", "alphaNumericWord", "+", "(", "blankSpace", "0*1", ")", "+", "labelChar", ")", "1*1" },
-    { "labelValue", "=", "(", "labelChar", "+", "(", "blankSpace", "0*1", ")", "+", "alphaNumericWord", ")", "1*1" },
+    { "labelDeclaration", "=", "alphaNumericWord", "+", "optionalBlankSpace", "+", "labelChar" },
+    { "labelValue", "=", "labelChar", "+", "optionalBlankSpace", "+", "alphaNumericWord" },
 
-    { "instructionName", "=", "(", \
+    { "instructionName", "=", \
         "'live'", "|", \
         "'ld'", "|", \
         "'st'", "|", \
@@ -71,11 +73,12 @@ const std::vector<std::vector<std::string>> SyntacticAnalyzer::_grammar =
         "'lld'", "|", \
         "'lldi'", "|", \
         "'lfork'", "|", \
-        "'print'", \
-     ")", "1*1" }
+        "'print'"
+    }
 };
 
 SyntacticAnalyzer::SyntacticAnalyzer()
+    : _rootRule(NULL)
 {
 }
 
@@ -102,24 +105,91 @@ void *SyntacticAnalyzer::createTree(const std::vector<std::vector<Tokenizer::Tok
     }
 
     //
-    if (!_initGrammarTree())
+    if (!_initGrammarMap() || !_initGrammarTree())
         return NULL;
+
+    std::cout << std::endl;
+    _readCreatedGrammarTree(_rootRule);
 
     return NULL;
 }
 
-bool SyntacticAnalyzer::_initGrammarTree()
+bool SyntacticAnalyzer::_initGrammarMap()
 {
     for (std::vector<std::string> grammarRule : _grammar)
     {
         BNFRule *rule = NULL;
 
-        if (grammarRule.size() < 3 || _grammarTree[grammarRule[0]] || !(rule = new BNFRule(grammarRule)))
+        if (!(rule = new BNFRule(_grammarTree, grammarRule)))
         {
-            std::cerr << "Error: SyntacticAnalyzer::_initGrammarTree()" << std::endl;
+            std::cerr << "Error: Cannot allocate new BNFRule()" << std::endl;
             return false;
         }
-        _grammarTree[grammarRule[0]] = rule;
+        if (!rule->init())
+        {
+            std::cerr << "Error: SyntacticAnalyze, invalid grammar rule" << std::endl;
+            return false;
+        }
+        if (_grammarTree.find(*(rule->name())) != _grammarTree.end())
+        {
+            std::cerr << "Error: SyntacticAnalyzer, duplicate rule" << std::endl;
+            return false;
+        }
+        if (rule->isRoot() && _rootRule)
+        {
+            std::cerr << "Error: SyntacticAnalyzer, multiple main rule" << std::endl;
+            return false;
+        }
+        else if (rule->isRoot())
+            _rootRule = rule;
+        _grammarTree[*(rule->name())] = rule;
     }
     return true;
+}
+
+bool SyntacticAnalyzer::_initGrammarTree()
+{
+    if (!_rootRule)
+    {
+        std::cerr << "Error: SyntacticAnalyzer, no root rule" << std::endl;
+        return false;
+    }
+    return _rootRule->createTree();
+}
+
+// Debug
+void SyntacticAnalyzer::_readCreatedGrammarTree(BNFRule *rule, int level)
+{
+    std::string tabulations;
+    std::string arrow;
+
+    for (int i = 0; i != level; ++i)
+    {
+        tabulations += "\t";
+    }
+
+    for (int i = 0; level && i != level; ++i)
+    {
+        if (i == level - 1)
+            arrow += "|-------|";
+        else
+            arrow += "\t";
+    }
+
+    if (level)
+    {
+        std::cout << arrow << std::endl;
+    }
+
+    std::cout << tabulations << "| " << *rule->name() << " |";
+    if (rule->expectedToken() != Tokenizer::Token::eType::UNKNOWN)
+        std::cout << " TOKEN -> " << rule->expectedToken();
+    else if (rule->expectedValue())
+        std::cout << " VALUE -> " << *(rule->expectedValue());
+    std::cout << std::endl;
+
+    for (BNFRule *subRule : rule->subTree())
+    {
+        _readCreatedGrammarTree(subRule, level + 1);
+    }
 }

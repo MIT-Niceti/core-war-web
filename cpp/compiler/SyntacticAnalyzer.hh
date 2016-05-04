@@ -13,6 +13,7 @@ private:
 
     static const std::vector<std::vector<std::string>> _grammar;
     std::map<std::string, BNFRule *> _grammarTree;
+    BNFRule *_rootRule;
 
 public:
     SyntacticAnalyzer();
@@ -21,7 +22,9 @@ public:
     void *createTree(const std::vector<std::vector<Tokenizer::Token> *> &tokenizedFile);
 
 private:
+    bool _initGrammarMap();
     bool _initGrammarTree();
+    void _readCreatedGrammarTree(BNFRule *, int = 0);
 };
 
 # include "BNFRule.hh"

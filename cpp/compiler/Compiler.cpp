@@ -30,7 +30,10 @@ void Compiler::_runTokenizer()
 
     _openInputFile();
     while (std::getline(_inputFileStream, line) && (tokenizedLine = tokenizer.tokenizeLine(line)))
-        _tokenizedFile.push_back(tokenizedLine);
+    {
+        if (!tokenizedLine->empty())
+            _tokenizedFile.push_back(tokenizedLine);
+    }
     _closeInputFile();
 }
 
