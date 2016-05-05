@@ -33,6 +33,7 @@ public:
 	bool addEvent(int cycle, int championId, std::string &championName, std::string &op,
 					int wrote, int at, bool reg = false);
 	void dumpReplay(void);
+	std::string serialize(int winnerId);
 	Replay();
 	~Replay();
 };

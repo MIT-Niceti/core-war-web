@@ -20,8 +20,8 @@ public:
 	char		registers[16];
 	bool		carry = false;
 	bool doCycle(Arena &arena);
-	void fork(int pc);
+	void fork(int pc, Arena &arena);
 	int getParentId(void);
-	Process(Champion *parent, int pc, char registers[] = 0);
+	Process(Champion *parent, int pc, Process *process = NULL);
 	~Process();
 };

@@ -4,9 +4,9 @@
 #include "Champion.h"
 #include "Arena.h"
 
-void Process::fork(int pc)
+void Process::fork(int pc, Arena &arena)
 {
-	this->parent->fork(*this, pc);
+	this->parent->fork(*this, pc, arena);
 }
 
 int Process::getParentId(void)
@@ -42,14 +42,18 @@ bool Process::doCycle(Arena &arena)
 	return true;
 }
 
-Process::Process(Champion *parent, int pc, char registers[])
+Process::Process(Champion *parent, int pc, Process *process)
 {
 	this->pc = pc;
 	this->newPc = pc;
+	this->carry = 0;
 	this->parent = parent;
-	if (registers != 0)
+	if (process != NULL)
+	{
 		for (int i = 0; i < 16; i++)
-			this->registers[i] = registers[i];
+			this->registers[i] = process->registers[i];
+		this->carry = process->carry;
+	}
 	else
 		for (int i = 0; i < 16; i++)
 			this->registers[i] = 0;

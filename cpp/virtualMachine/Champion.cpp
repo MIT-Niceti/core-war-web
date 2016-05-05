@@ -2,9 +2,12 @@
 #include "Champion.h"
 #include "Arena.h"
 
-void Champion::fork(Process &process, int pc)
+void Champion::fork(Process &process, int pc, Arena &arena)
 {
-	this->processes.push_back(Process(this, pc, process.registers));
+	if (this->processes.size() > 1000)
+		return;
+	arena.load(pc, *(this->code));
+	this->processes.push_back(Process(this, pc, &process));
 }
 
 std::string Champion::getName()
@@ -22,7 +25,7 @@ bool Champion::doCycle(Arena &arena)
 	for (std::list<Process>::iterator it = this->processes.begin(); it != this->processes.end(); ++it)
 	{
 		if (!it->doCycle(arena))
-			return false;
+			continue;
 	}
 	return true;
 }
@@ -30,6 +33,7 @@ bool Champion::doCycle(Arena &arena)
 Champion::Champion(s_header header, std::vector<char> *code, int id, int pc)
 {
 	this->header = header;
+	this->code = code;
 	this->id = id;
 }
 

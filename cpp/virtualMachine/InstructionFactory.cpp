@@ -15,7 +15,6 @@ char InstructionFactory::getParamFromByte(int param, char paramByte)
 		return DIRECT;
 	else if (!((paramByte >> first) & 0x1) && ((paramByte >> second) & 0x1))
 		return REGISTER;
-	std::cout << "Bad param type" << std::endl;
 	return 0;
 }
 
@@ -51,7 +50,6 @@ char InstructionFactory::getParamType(Op *op, int param, char paramByte)
 		type = getParamFromByte(param, paramByte);
 	if (checkParam(op, param, type))
 		return type;
-	std::cout << "Not allowed param" << std::endl;
 	return 0;
 }
 
@@ -165,7 +163,6 @@ Instruction	*InstructionFactory::getInstruction(Arena &arena, Process *caller)
 		caller->newPc += 1;
 	if (data[0] <= 0x00 || data[0] - 1 >= 16)
 	{
-		std::cout << "Bad opcode: " << (int)data[0] << std::endl;
 		return NULL;
 	}
 	op = OpTab[data[0] - 1];
@@ -173,7 +170,6 @@ Instruction	*InstructionFactory::getInstruction(Arena &arena, Process *caller)
 		return NULL;
 	if (!getParams(arena, caller->newPc, params, op))
 	{
-		std::cout << "Bad params" << std::endl;
 		return NULL;
 	}
 	return new Instruction(op, params, caller);

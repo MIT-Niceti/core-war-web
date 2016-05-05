@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "Replay.h"
+#include <sstream>
 
 void Replay::dumpReplay(void)
 {
@@ -20,6 +21,41 @@ void Replay::dumpReplay(void)
 			std::cout << "adress: ";
 		std::cout << ite->at << std::endl;
 	}
+}
+
+std::string Replay::serialize(int winnerId)
+{
+	std::ostringstream json;
+
+	json << "{ replay: { winnerId: " << winnerId << ", nbPlayers: " << this->champions.size() << ", champions: [ ";
+	for (std::vector<ChampionRecap>::iterator it = champions.begin(); it != champions.end(); ++it)
+	{
+		json << '{' << "id: " << it->id << ','
+			<< "name: " << it->name << ','
+			<< "init: [";
+		for (int i = 0; i < it->code->size(); i++)
+		{
+			json << (int)it->code->at(i);
+			if (i + 1 < it->code->size())
+				json << ',';
+		}
+		json << "]" << "entryPoint: " << it->entryPoint << ','
+			<< "registers: " << it->id << " },";
+	}
+	json << "], modifList: [";
+	for (std::vector<OpLog>::iterator ite = modifList.begin(); ite != modifList.end(); ++ite)
+	{
+		json << '{' << "cycle: " << ite->cycle << ','
+			<< "championId: " << ite->championId << ','
+			<< "op: " << ite->op << ','
+			<< "wrote: " << ite->wrote << ','
+			<< "at: " << ite->at << ',';
+		if (ite->reg)
+			json << "reg: true,";
+		json << "},";
+	}
+	json << "] }";
+	return json.str();
 }
 
 bool Replay::addEvent(int cycle, int championId, std::string &championName, std::string &op,

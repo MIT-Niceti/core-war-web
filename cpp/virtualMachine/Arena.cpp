@@ -140,17 +140,18 @@ bool	Arena::checkLive()
 	return true;
 }
 
-bool	Arena::ending()
+std::string	Arena::ending()
 {
 	this->dumpArena();
 	std::cout << "Champion " << champions.begin()->getName() << " with id "
 				<< champions.begin()->id << " has won!" << std::endl;
-	return true;
+	return this->replayManager.serialize(champions.begin()->id);
 }
 
-bool	Arena::start(void)
+std::string	Arena::start(void)
 {
-	while (42)
+	std::cout << "Starting" << std::endl;
+	while (42 && champions.size() > 1)
 	{
 		for (std::list<Champion>::iterator it = champions.begin(); it != champions.end(); ++it)
 		{
@@ -165,11 +166,15 @@ bool	Arena::start(void)
 		++this->cycle_total;
 		if (this->cycle_total % this->cycle_to_die == 0)
 		{
+//			dumpArena();
 			if (checkLive() == false)
 				return ending();
 		}
 		if (champions.size() == 1)
 			return ending();
+//		std::cout << "a\n";
+		if (champions.size() < 1)
+			std::cout << "How?\n";
 	}
 	return ending();
 }
@@ -187,6 +192,7 @@ bool	Arena::setupArena(std::vector<std::string> &champions)
 		this->arena[i++] = 0x00;
 	if (!loadChampions(champions))
 		return false;
+	std::cout << "Ready to start" << std::endl;
 	return (this->champions.size() > 0);
 }
 

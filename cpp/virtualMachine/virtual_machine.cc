@@ -29,8 +29,7 @@ void Method(const FunctionCallbackInfo<Value>& args) {
     v8::String::Utf8Value param(args[i]->ToString());
     champions.push_back(std::string(*param));
   }
-  startMachine(champions);
-  args.GetReturnValue().Set(String::NewFromUtf8(isolate, "world"));
+  args.GetReturnValue().Set(String::NewFromUtf8(isolate, startMachine(champions).c_str()));
 }
 
 void init(Local<Object> exports) {

@@ -19,7 +19,7 @@ bool Zjmp::execute(Process *caller, std::vector<Param> &params, Arena &arena)
 //		std::cout << "Jumping at " << caller->pc << std::endl;
 	}
 	else
-		std::cout << "Carry not set." << std::endl;
+		std::cout << "Carry not set for champion id: " << caller->parent->id << std::endl;
 	return true;
 }
 

@@ -9,7 +9,7 @@
 #include "Operations.h"
 #include "Replay.h"
 
-int startMachine(std::vector<std::string> &champions);
+std::string startMachine(std::vector<std::string> &champions);
 class Arena
 {
 private:
@@ -24,7 +24,7 @@ private:
 	bool isLittleEndian();
 	bool setReplay(std::vector<ChampionRecap> &champions);
 	bool loadChampions(std::vector<std::string> &champions);
-	bool ending();
+	std::string ending();
 public:
 	void setLive(int id);
 	bool addEvent(int championId, std::string &op, int wrote, int at, bool reg = false);
@@ -32,7 +32,7 @@ public:
 	bool load(int offset, std::string &data);
 	std::vector<char> get(int offset, int size);
 	bool setupArena(std::vector<std::string> &champions);
-	bool start(void);
+	std::string start(void);
 	void dumpArena(void);
 	Arena();
 	~Arena();

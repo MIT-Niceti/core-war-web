@@ -22,7 +22,7 @@ private:
 public:
 	int					id;
 	bool				live;
-	void fork(Process &process, int pc);
+	void fork(Process &process, int pc, Arena &arena);
 	void addProcess(int pc);
 	bool doCycle(Arena &arena);
 	std::string getName();
