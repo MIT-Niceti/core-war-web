@@ -21,7 +21,7 @@ const std::vector<std::vector<std::string>> SyntacticAnalyzer::_grammar =
     { "alphaNumericWord", "=", "(", "decimalNumber", "|", "alphaWord", "|", "wordSeparator", ")", "1*x" },
 
     { "acceptableQuotedStr", "=", "(", "decimalNumber", "|", "alphaWord", "|", "blankSpace", "|", "wordSeparator", ")", "0*x" },
-    { "quotedStr", "=", "doubleQuotes", "+", "acceptableQuotedStr", "doubleQuotes" },
+    { "quotedStr", "=", "doubleQuotes", "+", "acceptableQuotedStr", "+", "doubleQuotes" },
 
     { "nameStr", "=", "'name'" },
     { "commentStr", "=", "'comment'" },
@@ -29,8 +29,9 @@ const std::vector<std::vector<std::string>> SyntacticAnalyzer::_grammar =
     { "metaComment", "=", "metaChar", "+", "commentStr" },
 
     { "language", "#", "validLine", "0*1" },
-    { "validLine", "=", "optionalBlankSpace", "+", "(", "declarativeLine", "|", "commentedLine", ")" },
+    { "validLine", "=", "optionalBlankSpace", "+", "(", "assemblyLine", "0*1", ")" },
 
+    { "assemblyLine", "=", "(", "declarativeLine", "|", "commentedLine", ")" },
     { "declarativeLine", "=", "assemblyDeclaration", "+", "optionalBlankSpace", "+", "(", "developerComment", "0*1", ")" },
     { "commentedLine", "=", "developerComment" },
 
@@ -45,8 +46,8 @@ const std::vector<std::vector<std::string>> SyntacticAnalyzer::_grammar =
     { "labelAndInstructionDeclaration", "=", "labelDeclaration", "+", "optionalBlankSpace", "+", "instructionDeclaration" },
 
     { "firstParameter", "=", "instructionParameter" },
-    { "nthParameter", "=", "parameterSeparatorChar", "+", "optionalBlankSpace", "+", "instructionParameter" },
-    { "instructionParameters", "=", "firstParameter", "+", "(", "(", "optionalBlankSpace", "+", "nthParameter", ")", "0*x", ")" },
+    { "nthParameter", "=", "(", "optionalBlankSpace", "+", "parameterSeparatorChar", "+", "optionalBlankSpace", "+", "instructionParameter", ")", "0*x" },
+    { "instructionParameters", "=", "firstParameter", "+", "nthParameter" },
 
     { "instructionParameter", "=", "registerParameter", "+", "directValueParameter", "+", "indirectValueParameter" },
 
@@ -160,36 +161,61 @@ bool SyntacticAnalyzer::_initGrammarTree()
 // Debug
 void SyntacticAnalyzer::_readCreatedGrammarTree(BNFRule *rule, int level)
 {
+    BNFRule *next = rule;
     std::string tabulations;
-    std::string arrow;
 
     for (int i = 0; i != level; ++i)
     {
         tabulations += "\t";
     }
 
-    for (int i = 0; level && i != level; ++i)
+    std::cout << tabulations;
+    std::cout << (rule->_name ? *(rule->_name) : "Unknown name") << " = ";
+
+    while (next)
     {
-        if (i == level - 1)
-            arrow += "|-------|";
+        std::cout << (char)next->_operator << " ";
+        if (next->_subRule)
+        {
+            std::cout << (next->_subRule->_name ? *(next->_subRule->_name) : "Unknown name");
+        }
+        else if (next->_expectedValue)
+        {
+            std::cout << "\"" << *(next->_expectedValue) << "\"";
+        }
+        else if (next->_expectedToken != Tokenizer::Token::eType::UNKNOWN)
+        {
+            std::cout << next->_expectedToken;
+        }
+        else if (next->_burnUntilEOL)
+        {
+            std::cout << "burnUntilEOL";
+        }
         else
-            arrow += "\t";
+        {
+            std::cout << "Unknown expected value/rule";
+        }
+        std::cout << " (" << next->_repetitionMin << "*";
+        if (next->_repetitionMax == (unsigned int)-1)
+        {
+            std::cout << "x" << ")";
+        }
+        else
+        {
+            std::cout << next->_repetitionMax << ")";
+        }
+        std::cout << " ";
+        next = next->_next;
     }
-
-    if (level)
-    {
-        std::cout << arrow << std::endl;
-    }
-
-    std::cout << tabulations << "| " << *rule->name() << " |";
-    if (rule->expectedToken() != Tokenizer::Token::eType::UNKNOWN)
-        std::cout << " TOKEN -> " << rule->expectedToken();
-    else if (rule->expectedValue())
-        std::cout << " VALUE -> " << *(rule->expectedValue());
     std::cout << std::endl;
 
-    for (BNFRule *subRule : rule->subTree())
+    next = rule;
+    while (next)
     {
-        _readCreatedGrammarTree(subRule, level + 1);
+        if (next->_subRule)
+        {
+            _readCreatedGrammarTree(next->_subRule, level + 1);
+        }
+        next = next->_next;
     }
 }

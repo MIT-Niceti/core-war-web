@@ -25,19 +25,34 @@ private:
         UNKNOWN = '\0'
     };
 
+    enum eBNFOperator : char
+    {
+        OP_CONCATENATION = '+',
+        OP_ALTERNATIVE = '|',
+        OP_UNKNOWN = '\0',
+    };
+
+public: // tmp
     std::map<std::string, BNFRule *> &_grammarMap;
 
     const std::vector<std::string> _stringDefinition;
-    std::vector<BNFRule *> _tree;
+    BNFRule *_next;
+    BNFRule *_prev;
+
+    std::string *_name;
+    bool _isRoot;
     bool _initStarted;
 
-    // concerne UNIQUEMENT cette regle, et devrait la definir dans sa globalite
-    bool _isRoot;
+    // Rule validity conditions
     unsigned int _repetitionMin;
     unsigned int _repetitionMax;
-    std::string *_name;
+    eBNFOperator _operator;
+
+    // Define the rule validity
+    BNFRule *_subRule;
     std::string *_expectedValue;
     Tokenizer::Token::eType _expectedToken;
+    bool _burnUntilEOL;
 
 public:
     BNFRule(std::map<std::string, BNFRule *> &, const std::vector<std::string> &);
@@ -47,7 +62,7 @@ public:
     bool createTree();
 
 private:
-    void printCurrentRule(); // temp
+    bool _constructElem(unsigned int &);
 
     bool _ruleAlreadyInitializing();
     bool _interpretRuleElement(unsigned int &);
@@ -58,20 +73,17 @@ private:
     bool _initName();
     bool _initRoot();
 
-public:
-    // bool valid() const;
-    // bool status() const;
+    void _pushBack(BNFRule *);
 
+public:
     const std::string *name() const;
     bool isRoot() const;
-
-    std::vector<BNFRule *> &subTree();
 
     const std::string *expectedValue() const;
     Tokenizer::Token::eType expectedToken() const;
 
-// private:
-//     void _createSubRuleFrom(const std::vector<std::string> &);
+private:
+    BNFRule *_getCurrentRuleRoot();
 };
 
 #endif		// !BNF_RULE_HH_

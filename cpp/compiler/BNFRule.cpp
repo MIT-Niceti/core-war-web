@@ -1,11 +1,13 @@
 #include "BNFRule.hh"
+#include <sstream>
 #include <iostream>
 
 SyntacticAnalyzer::BNFRule::BNFRule(std::map<std::string, BNFRule *> &grammarMap,
                                     const std::vector<std::string> &input)
-    : _grammarMap(grammarMap), _stringDefinition(input), _initStarted(false),
-    _isRoot(false), _repetitionMin(1), _repetitionMax(1), _name(NULL), _expectedValue(NULL),
-    _expectedToken(Tokenizer::Token::eType::UNKNOWN)
+    : _grammarMap(grammarMap), _stringDefinition(input), _next(NULL), _prev(NULL),
+    _name(NULL), _isRoot(false), _initStarted(false),
+    _repetitionMin(1), _repetitionMax(1), _operator(eBNFOperator::OP_CONCATENATION),
+    _subRule(NULL), _expectedValue(NULL), _expectedToken(Tokenizer::Token::eType::UNKNOWN), _burnUntilEOL(false)
 {
 }
 
@@ -18,25 +20,11 @@ bool SyntacticAnalyzer::BNFRule::init()
     return (_initName() && _initRoot());
 }
 
-void SyntacticAnalyzer::BNFRule::printCurrentRule()
-{
-    std::cout << "Current rule: ";
-    for (std::string elem : _stringDefinition)
-    {
-        std::cout << elem << ", ";
-    }
-    std::cout << std::endl;
-}
-
 bool SyntacticAnalyzer::BNFRule::_ruleAlreadyInitializing()
 {
     if (_initStarted)
-    {
-        std::cout << "|X| RULE ALREADY INITIALIZING" << std::endl;
         return true;
-    }
     _initStarted = true;
-    std::cout << std::endl << "|O| START RULE INITIALIZATION" << std::endl;
     return false;
 }
 
@@ -46,17 +34,28 @@ bool SyntacticAnalyzer::BNFRule::createTree()
         return true;
     if (_stringDefinition.size() > 2)
     {
-        printCurrentRule();
-        for (unsigned int i = 2; i != _stringDefinition.size(); ++i)
+        _name = (std::string *)&(_stringDefinition[0]);
+        for (unsigned int i = 2; i < _stringDefinition.size(); ++i)
         {
             if (!_interpretRuleElement(i))
                 return false;
         }
-        std::cout << "EOL" << std::endl;
         return (true);
     }
     std::cerr << "Error: Not enough data to construct rule" << std::endl;
     return (false);
+}
+
+bool SyntacticAnalyzer::BNFRule::_constructElem(unsigned int &i)
+{
+    _name = (std::string *)&(_stringDefinition[i]);
+    while (i < _stringDefinition.size())
+    {
+        if (!_interpretRuleElement(i))
+            return false;
+        ++i;
+    }
+    return true;
 }
 
 bool SyntacticAnalyzer::BNFRule::_interpretRuleElement(unsigned int &i)
@@ -76,39 +75,57 @@ bool SyntacticAnalyzer::BNFRule::_interpretRuleElement(unsigned int &i)
 
 bool SyntacticAnalyzer::BNFRule::_interpretSoloCharRuleElement(unsigned int &i)
 {
+    BNFRule *nextElem = NULL;
+    std::vector<std::string> generatedSubRule;
+    std::string generatedSubRuleName;
+
     switch (_stringDefinition[i][0])
     {
     case (eBNFToken::CONCATENATION):
-        std::cout << "CONCATENATION, ";
+        nextElem = new BNFRule(_grammarMap, _stringDefinition);
+        nextElem->_operator = eBNFOperator::OP_CONCATENATION;
+        _pushBack(nextElem);
+        nextElem->_constructElem(++i);
         break;
     case (eBNFToken::ALTERNATIVE):
-        std::cout << "ALTERNATIVE, ";
+        nextElem = new BNFRule(_grammarMap, _stringDefinition);
+        nextElem->_operator = eBNFOperator::OP_ALTERNATIVE;
+        _pushBack(nextElem);
+        nextElem->_constructElem(++i);
         break;
     case (eBNFToken::SEQUENCE_OPEN):
-        std::cout << "SEQUENCE_OPEN, ";
+        generatedSubRuleName = "SubRuleOf" + *(_getCurrentRuleRoot()->_name) + "Generated";
+        generatedSubRule.push_back(generatedSubRuleName);
+        generatedSubRule.push_back("=");
+
+        ++i;
+        while (i != _stringDefinition.size() && _stringDefinition[i][0] != eBNFToken::SEQUENCE_CLOSE)
+        {
+            generatedSubRule.push_back(_stringDefinition[i]);
+            ++i;
+        }
+
+        nextElem = new BNFRule(_grammarMap, generatedSubRule);
+        _grammarMap[generatedSubRuleName] = nextElem;
+        nextElem->createTree();
+        _subRule = nextElem;
+
         break;
     case (eBNFToken::SEQUENCE_CLOSE):
-        std::cout << "SEQUENCE_CLOSE, ";
         break;
     case (eBNFToken::BURN_UNTIL_EOL):
-        std::cout << "BURN_UNTIL_EOL, ";
         i = _stringDefinition.size() - 1;
+        _burnUntilEOL = true;
         break;
     case (eBNFToken::EXISTING_TOKEN):
-        std::cout << "EXISTING_TOKEN, ";
         if (i + 1 <= _stringDefinition.size())
         {
             ++i;
             _assignExistingToken(_stringDefinition[i]);
         }
-        else
-        {
-            std::cout << "NO EXISTING_TOKEN, ";
-        }
         break;
     default:
-        std::cout << "SOLO CHAR NOT FOUND, ";
-        break;
+        return false;
     }
     return true;
 }
@@ -137,14 +154,31 @@ void SyntacticAnalyzer::BNFRule::_assignExistingToken(const std::string &tokenSt
         _expectedToken = Tokenizer::Token::eType::COMMENT;
     else
         _expectedToken = Tokenizer::Token::eType::UNKNOWN;
-    std::cout << tokenStr << " -> numeric value = " << _expectedToken << ", ";
 }
 
 bool SyntacticAnalyzer::BNFRule::_interpretStringRuleElement(unsigned int &i)
 {
     if (_stringDefinition[i].find('*') != std::string::npos)
     {
-        std::cout << "REPETITION, ";
+        std::string min, max;
+
+        min = _stringDefinition[i].substr(0, _stringDefinition[i].find('*'));
+        max = _stringDefinition[i].substr(_stringDefinition[i].find('*') + 1);
+
+        std::stringstream convert(min);
+        if (!(convert >> _repetitionMin))
+            _repetitionMin = 1;
+
+        if (max != "x")
+        {
+            convert = std::stringstream(max);
+            if (!(convert >> _repetitionMax))
+                _repetitionMax = 1;
+        }
+        else
+        {
+            _repetitionMax = (unsigned int)-1;
+        }
     }
     else if (_stringDefinition[i].size() > 2 &&
             _stringDefinition[i].find('\'') == 0 &&
@@ -152,25 +186,22 @@ bool SyntacticAnalyzer::BNFRule::_interpretStringRuleElement(unsigned int &i)
     {
         std::string quotedString = _stringDefinition[i];
 
-        std::cout << "QUOTE = ";
         quotedString.pop_back();
         quotedString = quotedString.substr(1);
-        std::cout << quotedString << ", ";
         _expectedValue = new std::string(quotedString);
     }
     else
     {
         if (_grammarMap.find(_stringDefinition[i]) != _grammarMap.end())
         {
-            std::cout << "FOUND SUB RULE " << _stringDefinition[i] << std::endl;
             if (!_grammarMap[_stringDefinition[i]]->createTree())
-            {
-                std::cout << std::endl << "AIE AIE AIE c'est pas bon" << std::endl;
                 return false;
-            }
-            _tree.push_back(_grammarMap[_stringDefinition[i]]);
-            std::cout << "OUT OF SUB RULE " << _stringDefinition[i] << std::endl << std::endl;
-            printCurrentRule();
+            _subRule = _grammarMap[_stringDefinition[i]];
+        }
+        else
+        {
+            std::cerr << "Unknown BNF rule \"" << _stringDefinition[i] << "\"" << std::endl;
+            return false;
         }
     }
     return true;
@@ -181,7 +212,6 @@ bool SyntacticAnalyzer::BNFRule::_initName()
     if (_stringDefinition.size() > 0)
     {
         _name = (std::string *)(&(_stringDefinition[0]));
-        std::cout << "New rule \"" << *_name << "\", ";
         return (true);
     }
     std::cerr << "Error: Invalid rule name" << std::endl;
@@ -199,21 +229,20 @@ bool SyntacticAnalyzer::BNFRule::_initRoot()
             std::cerr << "Error: Invalid rule creation" << std::endl;
             return (false);
         }
-        std::cout << (_isRoot ? "is ROOT, " : "") << std::endl;
         return (true);
     }
     return (false);
 }
 
-// bool SyntacticAnalyzer::BNFRule::valid() const
-// {
-//     return (true);
-// }
-//
-// bool SyntacticAnalyzer::BNFRule::status() const
-// {
-//     return (true);
-// }
+void SyntacticAnalyzer::BNFRule::_pushBack(SyntacticAnalyzer::BNFRule *elem)
+{
+    BNFRule *last = this;
+
+    while (last && last->_next)
+        last = last->_next;
+    last->_next = elem;
+    elem->_prev = last;
+}
 
 const std::string *SyntacticAnalyzer::BNFRule::name() const
 {
@@ -223,11 +252,6 @@ const std::string *SyntacticAnalyzer::BNFRule::name() const
 bool SyntacticAnalyzer::BNFRule::isRoot() const
 {
     return _isRoot;
-}
-
-std::vector<SyntacticAnalyzer::BNFRule *> &SyntacticAnalyzer::BNFRule::subTree()
-{
-    return _tree;
 }
 
 const std::string *SyntacticAnalyzer::BNFRule::expectedValue() const
@@ -240,7 +264,11 @@ Tokenizer::Token::eType SyntacticAnalyzer::BNFRule::expectedToken() const
     return _expectedToken;
 }
 
-// void SyntacticAnalyzer::BNFRule::_createSubRuleFrom(const std::vector<std::string> &sequence)
-// {
-//     (void)sequence;
-// }
+SyntacticAnalyzer::BNFRule *SyntacticAnalyzer::BNFRule::_getCurrentRuleRoot()
+{
+    BNFRule *root = this;
+
+    while (root->_prev)
+        root = root->_prev;
+    return root;
+}

@@ -13,7 +13,7 @@ SRCS		=	main.cpp		\
 
 OBJS		=	$(SRCS:.cpp=.o)
 
-CPPFLAGS	+=	-W -Wall -Werror -Wextra -std=c++11
+CPPFLAGS	+=	-W -Wall -Werror -Wextra -std=c++11 -ggdb
 
 
 all:		$(NAME)
