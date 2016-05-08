@@ -9,7 +9,7 @@
 
 class SyntacticAnalyzer::BNFRule
 {
-private:
+protected:
     enum eBNFToken : char
     {
         CREATION = '=',
@@ -32,7 +32,6 @@ private:
         OP_UNKNOWN = '\0',
     };
 
-public: // tmp
     std::map<std::string, BNFRule *> &_grammarMap;
 
     const std::vector<std::string> _stringDefinition;
@@ -61,7 +60,7 @@ public:
     bool init();
     bool createTree();
 
-private:
+protected:
     bool _constructElem(unsigned int &);
 
     bool _ruleAlreadyInitializing();
@@ -82,7 +81,7 @@ public:
     const std::string *expectedValue() const;
     Tokenizer::Token::eType expectedToken() const;
 
-private:
+protected:
     BNFRule *_getCurrentRuleRoot();
 };
 

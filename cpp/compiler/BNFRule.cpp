@@ -34,7 +34,7 @@ bool SyntacticAnalyzer::BNFRule::createTree()
         return true;
     if (_stringDefinition.size() > 2)
     {
-        _name = (std::string *)&(_stringDefinition[0]);
+        _name = new std::string(_stringDefinition[0]);
         for (unsigned int i = 2; i < _stringDefinition.size(); ++i)
         {
             if (!_interpretRuleElement(i))
@@ -48,7 +48,7 @@ bool SyntacticAnalyzer::BNFRule::createTree()
 
 bool SyntacticAnalyzer::BNFRule::_constructElem(unsigned int &i)
 {
-    _name = (std::string *)&(_stringDefinition[i]);
+    _name = new std::string(_stringDefinition[i]);
     while (i < _stringDefinition.size())
     {
         if (!_interpretRuleElement(i))

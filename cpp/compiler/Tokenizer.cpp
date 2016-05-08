@@ -16,7 +16,7 @@ std::vector<Tokenizer::Token> *Tokenizer::tokenizeLine(const std::string &line)
     const char *linePtr = line.c_str();
     int lineIndex = 0;
 
-    std::cout << line << std::endl;
+    // std::cout << line << std::endl;
     while (linePtr[lineIndex] != '\0')
         _fillTokensList(linePtr, lineIndex, tokens);
     return tokens;

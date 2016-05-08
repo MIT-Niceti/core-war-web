@@ -9,7 +9,8 @@ SRCS		=	main.cpp		\
 			Tokenizer.cpp		\
 			Token.cpp		\
 			SyntacticAnalyzer.cpp	\
-			BNFRule.cpp
+			BNFRule.cpp		\
+			GrammarRule.cpp
 
 OBJS		=	$(SRCS:.cpp=.o)
 

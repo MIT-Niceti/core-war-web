@@ -1,4 +1,6 @@
 #include "SyntacticAnalyzer.hh"
+#include "BNFRule.hh"
+#include "GrammarRule.hh"
 #include <iostream>
 
 const std::vector<std::vector<std::string>> SyntacticAnalyzer::_grammar =
@@ -20,7 +22,7 @@ const std::vector<std::vector<std::string>> SyntacticAnalyzer::_grammar =
 
     { "alphaNumericWord", "=", "(", "decimalNumber", "|", "alphaWord", "|", "wordSeparator", ")", "1*x" },
 
-    { "acceptableQuotedStr", "=", "(", "decimalNumber", "|", "alphaWord", "|", "blankSpace", "|", "wordSeparator", ")", "0*x" },
+    { "acceptableQuotedStr", "=", "(", "decimalNumber", "|", "alphaWord", "|", "blankSpace", "|", "wordSeparator", ")", "1*x" },
     { "quotedStr", "=", "doubleQuotes", "+", "acceptableQuotedStr", "+", "doubleQuotes" },
 
     { "nameStr", "=", "'name'" },
@@ -28,13 +30,14 @@ const std::vector<std::vector<std::string>> SyntacticAnalyzer::_grammar =
     { "metaName", "=", "metaChar", "+", "nameStr" },
     { "metaComment", "=", "metaChar", "+", "commentStr" },
 
-    { "language", "#", "validLine", "0*1" },
-    { "validLine", "=", "optionalBlankSpace", "+", "(", "assemblyLine", "0*1", ")" },
+    { "language", "#", "validLine" },
+    { "validLine", "=", "optionalBlankSpace", "+", "assemblyLine" },
 
-    { "assemblyLine", "=", "(", "declarativeLine", "|", "commentedLine", ")" },
-    { "declarativeLine", "=", "assemblyDeclaration", "+", "optionalBlankSpace", "+", "(", "developerComment", "0*1", ")" },
+    { "assemblyLine", "=", "declarativeLine", "|", "commentedLine" },
+    { "declarativeLine", "=", "assemblyDeclaration", "+", "optionalBlankSpace", "+", "optionalDeveloperComment" },
     { "commentedLine", "=", "developerComment" },
 
+    { "optionalDeveloperComment", "=", "developerComment", "0*1" },
     { "developerComment", "=", "commentChar", "+", "anyChar" },
 
     { "metaNameDeclaration", "=", "metaName", "+", "blankSpace", "+", "quotedStr" },
@@ -52,7 +55,8 @@ const std::vector<std::vector<std::string>> SyntacticAnalyzer::_grammar =
     { "instructionParameter", "=", "registerParameter", "+", "directValueParameter", "+", "indirectValueParameter" },
 
     { "registerParameter", "=", "'r'", "+", "decimalNumber" },
-    { "directValueParameter", "=", "directChar", "+", "optionalBlankSpace", "+", "(", "decimalNumber", "|", "labelValue", ")" },
+    { "directValue", "=", "decimalNumber", "|", "labelValue" },
+    { "directValueParameter", "=", "directChar", "+", "optionalBlankSpace", "+", "directValue" },
     { "indirectValueParameter", "=", "decimalNumber", "|", "labelValue" },
 
     { "labelDeclaration", "=", "alphaNumericWord", "+", "optionalBlankSpace", "+", "labelChar" },
@@ -89,28 +93,14 @@ SyntacticAnalyzer::~SyntacticAnalyzer()
 
 void *SyntacticAnalyzer::createTree(const std::vector<std::vector<Tokenizer::Token> *> &tokenizedFile)
 {
-    unsigned int j = 0;
-    while (j != tokenizedFile.size())
-    {
-        unsigned int i = 0;
-        while (i != tokenizedFile[j]->size())
-        {
-            std::cout << "Token type: " << (*tokenizedFile[j])[i].type << " | "
-                << "Raw token string: \"" << (*tokenizedFile[j])[i].raw << "\"" << std::endl;
-            ++i;
-        }
-        if (i == 0)
-            std::cout << "Empty line" << std::endl;
-        std::cout << std::endl;
-        ++j;
-    }
-
-    //
     if (!_initGrammarMap() || !_initGrammarTree())
         return NULL;
 
-    std::cout << std::endl;
-    _readCreatedGrammarTree(_rootRule);
+    // std::cout << std::endl;
+    // _readCreatedGrammarTree(_rootRule);
+
+    if (!_parseInput(tokenizedFile))
+        return NULL;
 
     return NULL;
 }
@@ -158,64 +148,77 @@ bool SyntacticAnalyzer::_initGrammarTree()
     return _rootRule->createTree();
 }
 
-// Debug
-void SyntacticAnalyzer::_readCreatedGrammarTree(BNFRule *rule, int level)
+bool SyntacticAnalyzer::_parseInput(const std::vector<std::vector<Tokenizer::Token> *> &tokenizedFile)
 {
-    BNFRule *next = rule;
-    std::string tabulations;
+    GrammarRule *rootRule = static_cast<GrammarRule *>(_rootRule);
 
-    for (int i = 0; i != level; ++i)
+    for (unsigned int line = 0; line != tokenizedFile.size(); ++line)
     {
-        tabulations += "\t";
+        // if (!rootRule->parseInput(*tokenizedFile[line]))
+        //     return false;
+        rootRule->parseLine(*tokenizedFile[line]);
     }
-
-    std::cout << tabulations;
-    std::cout << (rule->_name ? *(rule->_name) : "Unknown name") << " = ";
-
-    while (next)
-    {
-        std::cout << (char)next->_operator << " ";
-        if (next->_subRule)
-        {
-            std::cout << (next->_subRule->_name ? *(next->_subRule->_name) : "Unknown name");
-        }
-        else if (next->_expectedValue)
-        {
-            std::cout << "\"" << *(next->_expectedValue) << "\"";
-        }
-        else if (next->_expectedToken != Tokenizer::Token::eType::UNKNOWN)
-        {
-            std::cout << next->_expectedToken;
-        }
-        else if (next->_burnUntilEOL)
-        {
-            std::cout << "burnUntilEOL";
-        }
-        else
-        {
-            std::cout << "Unknown expected value/rule";
-        }
-        std::cout << " (" << next->_repetitionMin << "*";
-        if (next->_repetitionMax == (unsigned int)-1)
-        {
-            std::cout << "x" << ")";
-        }
-        else
-        {
-            std::cout << next->_repetitionMax << ")";
-        }
-        std::cout << " ";
-        next = next->_next;
-    }
-    std::cout << std::endl;
-
-    next = rule;
-    while (next)
-    {
-        if (next->_subRule)
-        {
-            _readCreatedGrammarTree(next->_subRule, level + 1);
-        }
-        next = next->_next;
-    }
+    return true;
 }
+
+// // Debug
+// void SyntacticAnalyzer::_readCreatedGrammarTree(BNFRule *rule, int level)
+// {
+//     BNFRule *next = rule;
+//     std::string tabulations;
+//
+//     for (int i = 0; i != level; ++i)
+//     {
+//         tabulations += "\t";
+//     }
+//
+//     std::cout << tabulations;
+//     std::cout << (rule->_name ? *(rule->_name) : "Unknown name") << " = ";
+//
+//     while (next)
+//     {
+//         std::cout << (char)next->_operator << " ";
+//         if (next->_subRule)
+//         {
+//             std::cout << (next->_subRule->_name ? *(next->_subRule->_name) : "Unknown name");
+//         }
+//         else if (next->_expectedValue)
+//         {
+//             std::cout << "\"" << *(next->_expectedValue) << "\"";
+//         }
+//         else if (next->_expectedToken != Tokenizer::Token::eType::UNKNOWN)
+//         {
+//             std::cout << next->_expectedToken;
+//         }
+//         else if (next->_burnUntilEOL)
+//         {
+//             std::cout << "burnUntilEOL";
+//         }
+//         else
+//         {
+//             std::cout << "Unknown expected value/rule";
+//         }
+//         std::cout << " (" << next->_repetitionMin << "*";
+//         if (next->_repetitionMax == (unsigned int)-1)
+//         {
+//             std::cout << "x" << ")";
+//         }
+//         else
+//         {
+//             std::cout << next->_repetitionMax << ")";
+//         }
+//         std::cout << " ";
+//         next = next->_next;
+//     }
+//     std::cout << std::endl;
+//
+//     next = rule;
+//     while (next)
+//     {
+//         if (next->_subRule)
+//         {
+//             _readCreatedGrammarTree(next->_subRule, level + 1);
+//         }
+//         next = next->_next;
+//     }
+// }
