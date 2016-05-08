@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Core War Web | Game Lobbies</title>
+  </head>
+  <body>
+    <% if (user) { %>
+      <h1>Game lobbies</h1>
+      <p>Hey <i><%= user.name %></i>, here you can join this lobby</p>
+      <p>You can temporary go to an hard coded version of the <a href="/arena.html">arena</a></p>
+    <% if (lobby) { %>
+        <p>Lobby: <i><%= lobby.name %></i>, max players: <i><%= lobby.maxPlayers %></i></p>
+        <% lobby.users.forEach(function (member) { %>
+          <p>
+            Member: <i><%= member.name %></i>
+            <% if (status == 'creator') %> Kick this user <a href="/lobbies.html/<%= lobby._id %>/kick/<%= member.id %>">Kick</a>
+          </p>
+    <% });} %>
+    <% if (status) { %>
+        <h2> <%= status %> </h2> <%
+        if (status == 'nothing') { %>
+          <p>Join this lobby  <a href="/lobbies.html/<%= lobby._id %>/join">Join</a></p>
+        <% }
+        else if (status == 'member')
+        { %>
+          <p>Leave this lobby  <a href="/lobbies.html/<%= lobby._id %>/leave">Leave</a></p>
+        <% }
+        else if (status == 'creator')
+        { %>
+          <p>Erase this lobby  <a href="/lobbies.html/<%= lobby._id %>/erase">Erase</a></p>
+        <% }
+    } %>
+      <p>Get back to <a href="/index.html">main page</a></p>
+    <% } else { %>
+      <h1>An error occured</h1>
+        <p>Go back to the <a href="/index.html">main page</a></p>
+    <% } %>
+  </body>
+</html>
