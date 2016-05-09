@@ -144,7 +144,7 @@ std::string	Arena::ending()
 {
 	this->dumpArena();
 	std::cout << "Champion " << champions.begin()->getName() << " with id "
-				<< champions.begin()->id << " has won!" << std::endl;
+				<< champions.begin()->id << " has won! At cycle: " << this->cycle_total << std::endl;
 	return this->replayManager.serialize(champions.begin()->id);
 }
 

@@ -13,7 +13,7 @@ void Replay::dumpReplay(void)
 	std::cout << "\nII- Modif list:" << std::endl;
 	for (std::vector<OpLog>::iterator ite = modifList.begin(); ite != modifList.end(); ++ite)
 	{
-		std::cout << "	- Cycle" << ite->cycle << " Champion id: " << ite->championId 
+		std::cout << "	- Cycle" << ite->cycle << " Champion id: " << ite->championId
 			<< " Op: " << ite->op << " Value: " << ite->wrote	<< " At ";
 		if (ite->reg)
 			std::cout << "register: ";
@@ -27,34 +27,38 @@ std::string Replay::serialize(int winnerId)
 {
 	std::ostringstream json;
 
-	json << "{ replay: { winnerId: " << winnerId << ", nbPlayers: " << this->champions.size() << ", champions: [ ";
+	json << "{ \"replay\": { \"winnerId\": " << winnerId << ", \"nbPlayers\": " << this->champions.size() << ", \"champions\": [ ";
 	for (std::vector<ChampionRecap>::iterator it = champions.begin(); it != champions.end(); ++it)
 	{
-		json << '{' << "id: " << it->id << ','
-			<< "name: " << it->name << ','
-			<< "init: [";
+		json << '{' << "\"id\": " << it->id << ','
+			<< "\"name\": \"" << it->name << "\","
+			<< "\"init\": [";
 		for (int i = 0; i < it->code->size(); i++)
 		{
 			json << (int)it->code->at(i);
 			if (i + 1 < it->code->size())
 				json << ',';
 		}
-		json << "]" << "entryPoint: " << it->entryPoint << ','
-			<< "registers: " << it->id << " },";
+		json << "], " << " \"entryPoint\": " << it->entryPoint << ','
+			<< "\"registers\": " << it->id << " }";
+		if ((it + 1) != champions.end())
+			json << ',';
 	}
-	json << "], modifList: [";
+	json << "],\"modifList\": [";
 	for (std::vector<OpLog>::iterator ite = modifList.begin(); ite != modifList.end(); ++ite)
 	{
-		json << '{' << "cycle: " << ite->cycle << ','
-			<< "championId: " << ite->championId << ','
-			<< "op: " << ite->op << ','
-			<< "wrote: " << ite->wrote << ','
-			<< "at: " << ite->at << ',';
+		json << '{' << "\"cycle\": " << ite->cycle << ','
+			<< "\"championId\": " << ite->championId << ','
+			<< "\"op\": \"" << ite->op << "\","
+			<< "\"wrote\": " << ite->wrote << ','
+			<< "\"at\": " << ite->at;
 		if (ite->reg)
-			json << "reg: true,";
-		json << "},";
+			json << ",\"reg\": \"true\"";
+		json << "}";
+		if ((ite + 1) != modifList.end())
+			json << ',';
 	}
-	json << "] }";
+	json << "]}}";
 	return json.str();
 }
 

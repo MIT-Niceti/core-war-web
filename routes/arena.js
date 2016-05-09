@@ -13,7 +13,13 @@ module.exports = function initArenaRoutes(app, conf) {
   ensureLoggedIn('/index.html'),
     function (req, res) {
       arenaController.launchVirtualMachine().then(function (data) {
-        res.render('arena', { user: req.user, arena: data });
+        try {
+          res.render('arena', { user: req.user, arena: data });
+        }
+        catch (e) {
+          console.log('Error: ' + e);
+          res.redirect('/lobbies.html/');
+        }
       });
     }
   );
