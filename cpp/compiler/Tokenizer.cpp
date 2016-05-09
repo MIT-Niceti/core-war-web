@@ -1,6 +1,6 @@
 #include "Tokenizer.hh"
-#include <string>
 #include <iostream>
+#include <string>
 
 Tokenizer::Tokenizer()
 {
@@ -10,36 +10,53 @@ Tokenizer::~Tokenizer()
 {
 }
 
-std::vector<Tokenizer::Token> *Tokenizer::tokenizeLine(const std::string &line)
+const TokensLine *Tokenizer::tokenizeLine(const std::string &line)
 {
-    std::vector<Token> *tokens = new std::vector<Token>;
+    TokensLine *tokens = new TokensLine;
     const char *linePtr = line.c_str();
-    int lineIndex = 0;
+    unsigned int lineIndex = 0;
 
-    // std::cout << line << std::endl;
-    while (linePtr[lineIndex] != '\0')
+    std::cout << line << std::endl;
+    while (lineIndex != line.size())
         _fillTokensList(linePtr, lineIndex, tokens);
+    if (!_checkTokensLine(tokens))
+    {
+        for (Token *token : *tokens)
+            delete token;
+        delete tokens;
+        tokens = NULL;
+    }
     return tokens;
 }
 
-void Tokenizer::_fillTokensList(const char *line, int &lineIndex, std::vector<Token> *&tokens)
+void Tokenizer::_fillTokensList(const char *line, unsigned int &lineIndex, TokensLine *tokens)
 {
-    int i = 0;
+    Token::eType type = Token::getTokenFromChar(line[lineIndex]);
+    Token *token = NULL;
 
-    while (i != Token::eType::UNKNOWN && Token::all[i].find(line[lineIndex]) == std::string::npos)
-        ++i;
-    if (i != Token::eType::UNKNOWN)
-    {
-        if (tokens->empty())
-            tokens->push_back(Token());
-        if (tokens->back().type != Token::eType::UNKNOWN && tokens->back().type != static_cast<Token::eType>(i))
-            tokens->push_back(Token());
-        tokens->back().type = static_cast<Token::eType>(i);
-        tokens->back().raw.push_back(line[lineIndex]);
-    }
+    if (!tokens->empty() && tokens->back()->type() == type)
+        token = tokens->back();
     else
     {
-        std::cerr << "Invalid token" << std::endl;
+        token = new Token;
+        tokens->push_back(token);
     }
+    token->setType(type);
+    token->addChar(line[lineIndex]);
     ++lineIndex;
+}
+
+bool Tokenizer::_checkTokensLine(const TokensLine *tokens) const
+{
+    for (Token *token : *tokens)
+    {
+        // std::cout << "Token | type = " << token->type() << " | value ='" << token->raw() << "'" << std::endl;
+        if (token->type() == Token::eType::UNKNOWN)
+        {
+            std::cerr << "Invalid token \"" << token->raw() << "\"" << std::endl;
+            return false;
+        }
+    }
+    // std::cout << std::endl;
+    return true;
 }

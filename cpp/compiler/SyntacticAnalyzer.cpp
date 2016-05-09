@@ -3,7 +3,7 @@
 #include "GrammarRule.hh"
 #include <iostream>
 
-const std::vector<std::vector<std::string>> SyntacticAnalyzer::_grammar =
+const GrammarDeclaration SyntacticAnalyzer::_grammar =
 {
     { "decimalNumber", "=", "^", "DIGITS" },
     { "alphaWord", "=", "^", "ALPHABET" },
@@ -91,7 +91,7 @@ SyntacticAnalyzer::~SyntacticAnalyzer()
 {
 }
 
-void *SyntacticAnalyzer::createTree(const std::vector<std::vector<Tokenizer::Token> *> &tokenizedFile)
+void *SyntacticAnalyzer::createTree(const TokensLines &tokenizedFile)
 {
     if (!_initGrammarMap() || !_initGrammarTree())
         return NULL;
@@ -107,7 +107,7 @@ void *SyntacticAnalyzer::createTree(const std::vector<std::vector<Tokenizer::Tok
 
 bool SyntacticAnalyzer::_initGrammarMap()
 {
-    for (std::vector<std::string> grammarRule : _grammar)
+    for (GrammarRuleDeclaration grammarRule : _grammar)
     {
         BNFRule *rule = NULL;
 
@@ -148,13 +148,13 @@ bool SyntacticAnalyzer::_initGrammarTree()
     return _rootRule->createTree();
 }
 
-bool SyntacticAnalyzer::_parseInput(const std::vector<std::vector<Tokenizer::Token> *> &tokenizedFile)
+bool SyntacticAnalyzer::_parseInput(const TokensLines &tokenizedFile)
 {
     GrammarRule *rootRule = static_cast<GrammarRule *>(_rootRule);
 
     for (unsigned int line = 0; line != tokenizedFile.size(); ++line)
     {
-        // if (!rootRule->parseInput(*tokenizedFile[line]))
+        // if (!rootRule->parseLine(*tokenizedFile[line]))
         //     return false;
         rootRule->parseLine(*tokenizedFile[line]);
     }

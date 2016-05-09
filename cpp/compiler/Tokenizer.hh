@@ -1,22 +1,23 @@
 #ifndef     TOKENIZER_HH_
 # define    TOKENIZER_HH_
 
+# include "Token.hh"
 # include <vector>
 # include <string>
+
+typedef std::vector<Token *> TokensLine;
+typedef std::vector<const TokensLine *> TokensLines;
 
 class Tokenizer
 {
 public:
-    class Token;
-
     Tokenizer();
     ~Tokenizer();
-    std::vector<Token> *tokenizeLine(const std::string &line);
+    const TokensLine *tokenizeLine(const std::string &);
 
 private:
-    void _fillTokensList(const char *, int &, std::vector<Token> *&);
+    void _fillTokensList(const char *, unsigned int &, TokensLine *);
+    bool _checkTokensLine(const TokensLine *) const;
 };
-
-# include "Token.hh"
 
 #endif      // !TOKENIZER_HH_

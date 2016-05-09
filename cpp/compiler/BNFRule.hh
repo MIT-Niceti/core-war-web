@@ -50,7 +50,7 @@ protected:
     // Define the rule validity
     BNFRule *_subRule;
     std::string *_expectedValue;
-    Tokenizer::Token::eType _expectedToken;
+    Token::eType _expectedToken;
     bool _burnUntilEOL;
 
 public:
@@ -79,7 +79,7 @@ public:
     bool isRoot() const;
 
     const std::string *expectedValue() const;
-    Tokenizer::Token::eType expectedToken() const;
+    Token::eType expectedToken() const;
 
 protected:
     BNFRule *_getCurrentRuleRoot();

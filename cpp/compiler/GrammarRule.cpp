@@ -5,12 +5,12 @@ SyntacticAnalyzer::GrammarRule::~GrammarRule()
 {
 }
 
-bool SyntacticAnalyzer::GrammarRule::parseLine(const std::vector<Tokenizer::Token> &inputLine)
+bool SyntacticAnalyzer::GrammarRule::parseLine(const TokensLine &inputLine)
 {
     // std::cout << "\t\t\t\t ### 4242424242424242424242424242" << std::endl << std::endl;
     for (unsigned int i = 0; i != inputLine.size(); ++i)
     {
-        std::cout << "[" << inputLine[i].raw << "] ";
+        std::cout << "[" << inputLine[i]->raw() << "] ";
     }
     std::cout << std::endl;
 
@@ -26,14 +26,21 @@ bool SyntacticAnalyzer::GrammarRule::parseLine(const std::vector<Tokenizer::Toke
     return false;
 }
 
-bool SyntacticAnalyzer::GrammarRule::_parse(const std::vector<Tokenizer::Token> &inputLine, unsigned int &i)
+bool SyntacticAnalyzer::GrammarRule::_parse(const TokensLine &inputLine, unsigned int &i)
 {
-    // std::cout << std::endl << "Current rule = " << *_name << " | i = " << i << " | Operator =  " << (char)_operator << " | " << _repetitionMin << "*" << _repetitionMax << std::endl;
+    // std::cout << std::endl << "Current rule = " << *_name << " | Operator =  " << (char)_operator << " | " << _repetitionMin << "*" << _repetitionMax << std::endl;
+    // std::cout << "i = " << i << " | inputLine.size() = " << inputLine.size() << std::endl;
+
+    if (i >= inputLine.size())
+    {
+        // std::cout << "i > inputLine.size() -> return false" << std::endl;
+        return false;
+    }
 
     if (_subRule)
         return _parseSubRule(inputLine, i);
 
-    if (_expectedToken != Tokenizer::Token::eType::UNKNOWN)
+    if (_expectedToken != Token::eType::UNKNOWN)
     {
         if (_parseToken(inputLine, i))
             return true;
@@ -50,23 +57,23 @@ bool SyntacticAnalyzer::GrammarRule::_parse(const std::vector<Tokenizer::Token> 
         return true;
 
     // std::cout << "_parse() NOTHING valid found" << std::endl;
-    // std::cout << "i = " << i << " | savedIndex = " << savedIndex << std::endl;
+    // std::cout << "i = " << i << std::endl;
     return false;
 }
 
-bool SyntacticAnalyzer::GrammarRule::_parseSubRule(const std::vector<Tokenizer::Token> &inputLine, unsigned int &i)
+bool SyntacticAnalyzer::GrammarRule::_parseSubRule(const TokensLine &inputLine, unsigned int &i)
 {
     unsigned int savedIndex = i;
 
-    // std::cout << "_parse() _subRule " << *_subRule->_name << " found" << std::endl;
+    // std::cout << "_parse() _subRule " << *(static_cast<GrammarRule *>(_subRule))->_name << " found" << std::endl;
     if (static_cast<GrammarRule *>(_subRule)->_parse(inputLine, i))
         return _parseValidSubRule(inputLine, i, savedIndex);
     return _parseInvalidSubRule(inputLine, i);
 }
 
-bool SyntacticAnalyzer::GrammarRule::_parseValidSubRule(const std::vector<Tokenizer::Token> &inputLine, unsigned int &i, unsigned int savedIndex)
+bool SyntacticAnalyzer::GrammarRule::_parseValidSubRule(const TokensLine &inputLine, unsigned int &i, unsigned int savedIndex)
 {
-    // std::cout << "sub rule " << *_subRule->_name << " is valid" << std::endl;
+    // std::cout << "sub rule " << *(static_cast<GrammarRule *>(_subRule))->_name << " is valid" << std::endl;
 
     while (static_cast<GrammarRule *>(_subRule)->_repetitionMax == (unsigned int)-1 &&
         static_cast<GrammarRule *>(_subRule)->_parse(inputLine, i));
@@ -76,7 +83,7 @@ bool SyntacticAnalyzer::GrammarRule::_parseValidSubRule(const std::vector<Tokeni
         // std::cout << "_parse() _next found" << std::endl;
         if (!static_cast<GrammarRule *>(_next)->_parse(inputLine, i))
         {
-            // std::cout << "_parse() _next " << *_next->_name << " is invalid" << std::endl;
+            // std::cout << "_parse() _next " << *(static_cast<GrammarRule *>(_subRule))->_name << " is invalid" << std::endl;
             i = savedIndex;
             return false;
         }
@@ -84,7 +91,7 @@ bool SyntacticAnalyzer::GrammarRule::_parseValidSubRule(const std::vector<Tokeni
     return true;
 }
 
-bool SyntacticAnalyzer::GrammarRule::_parseInvalidSubRule(const std::vector<Tokenizer::Token> &inputLine, unsigned int &i)
+bool SyntacticAnalyzer::GrammarRule::_parseInvalidSubRule(const TokensLine &inputLine, unsigned int &i)
 {
     GrammarRule *rule = static_cast<GrammarRule *>(static_cast<GrammarRule *>(_subRule)->_next);
 
@@ -97,7 +104,7 @@ bool SyntacticAnalyzer::GrammarRule::_parseInvalidSubRule(const std::vector<Toke
         rule = static_cast<GrammarRule *>(rule->_next);
     }
 
-    // std::cout << "sub rule " << *_subRule->_name << " is invalid" << std::endl << std::endl;
+    // std::cout << "sub rule " << *(static_cast<GrammarRule *>(_subRule))->_name << " is invalid" << std::endl << std::endl;
     if (_repetitionMin == 0)
     {
         // std::cout << "But repetition min = 0, so it's okay" << std::endl;
@@ -106,36 +113,35 @@ bool SyntacticAnalyzer::GrammarRule::_parseInvalidSubRule(const std::vector<Toke
     return false;
 }
 
-bool SyntacticAnalyzer::GrammarRule::_parseToken(const std::vector<Tokenizer::Token> &inputLine, unsigned int &i)
+bool SyntacticAnalyzer::GrammarRule::_parseToken(const TokensLine &inputLine, unsigned int &i)
 {
-    // std::cout << "_parse() token != UNKNOWN | " << inputLine[i].type << " | " << _expectedToken << std::endl;
-    if (inputLine[i].type == _expectedToken)
+    // std::cout << "_parse() token != UNKNOWN | " << inputLine[i]->type() << " | " << _expectedToken << std::endl;
+    if (i < inputLine.size() && inputLine[i]->type() == _expectedToken)
     {
         // std::cout << "input is valid" << std::endl;
-        std::cout << "Found valid token | Type = " << _expectedToken << "\t| Value = ' " << inputLine[i].raw << " '" << std::endl;
+        // std::cout << "Found valid token | Type = " << _expectedToken << "\t| Value = ' " << inputLine[i]->raw() << " '" << std::endl;
         ++i;
         return true;
     }
     return false;
 }
 
-bool SyntacticAnalyzer::GrammarRule::_parseStringValue(const std::vector<Tokenizer::Token> &inputLine, unsigned int &i)
+bool SyntacticAnalyzer::GrammarRule::_parseStringValue(const TokensLine &inputLine, unsigned int &i)
 {
     // std::cout << "_parse() _expectedValue found" << std::endl;
-    if (inputLine[i].raw == *_expectedValue)
+    if (i < inputLine.size() && inputLine[i]->raw() == *_expectedValue)
     {
-        // std::cout << "input is valid" << std::endl;
-        std::cout << "Found valid string\t\t| Value = ' " << inputLine[i].raw << " '" << std::endl;
+        // std::cout << "Found valid string\t\t| Value = ' " << inputLine[i]->raw() << " '" << std::endl;
         ++i;
         return true;
     }
     return false;
 }
 
-bool SyntacticAnalyzer::GrammarRule::_burnUntilEndOfLine(const std::vector<Tokenizer::Token> &inputLine, unsigned int &i)
+bool SyntacticAnalyzer::GrammarRule::_burnUntilEndOfLine(const TokensLine &inputLine, unsigned int &i)
 {
     // std::cout << "_parse() _burnUntilEOL found" << std::endl;
-    std::cout << "Found burn until EOL" << std::endl;
+    // std::cout << "Found burn until EOL" << std::endl;
     i = inputLine.size();
     return true;
 }

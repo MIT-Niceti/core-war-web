@@ -7,7 +7,7 @@ SyntacticAnalyzer::BNFRule::BNFRule(std::map<std::string, BNFRule *> &grammarMap
     : _grammarMap(grammarMap), _stringDefinition(input), _next(NULL), _prev(NULL),
     _name(NULL), _isRoot(false), _initStarted(false),
     _repetitionMin(1), _repetitionMax(1), _operator(eBNFOperator::OP_CONCATENATION),
-    _subRule(NULL), _expectedValue(NULL), _expectedToken(Tokenizer::Token::eType::UNKNOWN), _burnUntilEOL(false)
+    _subRule(NULL), _expectedValue(NULL), _expectedToken(Token::eType::UNKNOWN), _burnUntilEOL(false)
 {
 }
 
@@ -133,27 +133,27 @@ bool SyntacticAnalyzer::BNFRule::_interpretSoloCharRuleElement(unsigned int &i)
 void SyntacticAnalyzer::BNFRule::_assignExistingToken(const std::string &tokenStr)
 {
     if (tokenStr == "DIGITS")
-        _expectedToken = Tokenizer::Token::eType::DIGITS;
+        _expectedToken = Token::eType::DIGITS;
     else if (tokenStr == "ALPHABET")
-        _expectedToken = Tokenizer::Token::eType::ALPHABET;
+        _expectedToken = Token::eType::ALPHABET;
     else if (tokenStr == "WORD_SEPARATORS")
-        _expectedToken = Tokenizer::Token::eType::WORD_SEPARATORS;
+        _expectedToken = Token::eType::WORD_SEPARATORS;
     else if (tokenStr == "BLANK_SPACE")
-        _expectedToken = Tokenizer::Token::eType::BLANK_SPACE;
+        _expectedToken = Token::eType::BLANK_SPACE;
     else if (tokenStr == "DOUBLE_QUOTES")
-        _expectedToken = Tokenizer::Token::eType::DOUBLE_QUOTES;
+        _expectedToken = Token::eType::DOUBLE_QUOTES;
     else if (tokenStr == "META")
-        _expectedToken = Tokenizer::Token::eType::META;
+        _expectedToken = Token::eType::META;
     else if (tokenStr == "LABEL")
-        _expectedToken = Tokenizer::Token::eType::LABEL;
+        _expectedToken = Token::eType::LABEL;
     else if (tokenStr == "DIRECT")
-        _expectedToken = Tokenizer::Token::eType::DIRECT;
+        _expectedToken = Token::eType::DIRECT;
     else if (tokenStr == "PARAMETER_SEPARATOR")
-        _expectedToken = Tokenizer::Token::eType::PARAMETER_SEPARATOR;
+        _expectedToken = Token::eType::PARAMETER_SEPARATOR;
     else if (tokenStr == "COMMENT")
-        _expectedToken = Tokenizer::Token::eType::COMMENT;
+        _expectedToken = Token::eType::COMMENT;
     else
-        _expectedToken = Tokenizer::Token::eType::UNKNOWN;
+        _expectedToken = Token::eType::UNKNOWN;
 }
 
 bool SyntacticAnalyzer::BNFRule::_interpretStringRuleElement(unsigned int &i)
@@ -259,7 +259,7 @@ const std::string *SyntacticAnalyzer::BNFRule::expectedValue() const
     return _expectedValue;
 }
 
-Tokenizer::Token::eType SyntacticAnalyzer::BNFRule::expectedToken() const
+Token::eType SyntacticAnalyzer::BNFRule::expectedToken() const
 {
     return _expectedToken;
 }
