@@ -17,7 +17,7 @@ public:
 
 private:
     void _fillTokensList(const char *, unsigned int &, TokensLine *);
-    bool _checkTokensLine(const TokensLine *) const;
+    bool _checkTokensLine(TokensLine *) const;
 };
 
 #endif      // !TOKENIZER_HH_

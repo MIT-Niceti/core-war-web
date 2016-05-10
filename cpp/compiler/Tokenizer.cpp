@@ -46,8 +46,15 @@ void Tokenizer::_fillTokensList(const char *line, unsigned int &lineIndex, Token
     ++lineIndex;
 }
 
-bool Tokenizer::_checkTokensLine(const TokensLine *tokens) const
+bool Tokenizer::_checkTokensLine(TokensLine *tokens) const
 {
+    // Make line act as empty if there is only spaces and tabulations
+    if (tokens->size() == 1 && tokens->back()->type() == Token::eType::BLANK_SPACE)
+    {
+        delete tokens->back();
+        tokens->pop_back();
+        return true;
+    }
     for (Token *token : *tokens)
     {
         // std::cout << "Token | type = " << token->type() << " | value ='" << token->raw() << "'" << std::endl;
