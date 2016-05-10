@@ -28,17 +28,16 @@ bool SyntacticAnalyzer::GrammarRule::parseLine(const TokensLine &inputLine)
 
 bool SyntacticAnalyzer::GrammarRule::_parse(const TokensLine &inputLine, unsigned int &i)
 {
-    // std::cout << std::endl << "Current rule = " << *_name << " | Operator =  " << (char)_operator << " | " << _repetitionMin << "*" << _repetitionMax << std::endl;
+    // std::cout << std::endl << "Current rule = " << *_getCurrentRuleRoot()->_name << "->" << *_name
+    //     << " | Operator =  '" << (char)_operator
+    //     << "' | " << _repetitionMin << "*" << _repetitionMax << std::endl;
     // std::cout << "i = " << i << " | inputLine.size() = " << inputLine.size() << std::endl;
 
-    if (i >= inputLine.size())
-    {
-        // std::cout << "i > inputLine.size() -> return false" << std::endl;
-        return false;
-    }
-
     if (_subRule)
-        return _parseSubRule(inputLine, i);
+    {
+        // std::cout << "Found sub rule" << std::endl;
+        return static_cast<GrammarRule *>(_subRule)->_parseSubRule(inputLine, i);
+    }
 
     if (_expectedToken != Token::eType::UNKNOWN)
     {
@@ -65,27 +64,39 @@ bool SyntacticAnalyzer::GrammarRule::_parseSubRule(const TokensLine &inputLine, 
 {
     unsigned int savedIndex = i;
 
-    // std::cout << "_parse() _subRule " << *(static_cast<GrammarRule *>(_subRule))->_name << " found" << std::endl;
-    if (static_cast<GrammarRule *>(_subRule)->_parse(inputLine, i))
+    // std::cout << "Checking sub rule " << *_getCurrentRuleRoot()->_name << "->" << *_name << "..." << std::endl;
+    if (_parse(inputLine, i))
         return _parseValidSubRule(inputLine, i, savedIndex);
     return _parseInvalidSubRule(inputLine, i);
 }
 
 bool SyntacticAnalyzer::GrammarRule::_parseValidSubRule(const TokensLine &inputLine, unsigned int &i, unsigned int savedIndex)
 {
-    // std::cout << "sub rule " << *(static_cast<GrammarRule *>(_subRule))->_name << " is valid" << std::endl;
+    unsigned int repetition = 0;
 
-    while (static_cast<GrammarRule *>(_subRule)->_repetitionMax == (unsigned int)-1 &&
-        static_cast<GrammarRule *>(_subRule)->_parse(inputLine, i));
+    // std::cout << "Sub rule " << *_getCurrentRuleRoot()->_name << "->" << *_name << " is valid" << std::endl;
+    // std::cout << "But before should be repeat the sub rule " << *_getCurrentRuleRoot()->_name << "->" << *_name << " ?.." << std::endl;
+    while (++repetition != _repetitionMax && _parse(inputLine, i));
+    // {
+    //     // std::cout << "Yes, current sub rule " << *_getCurrentRuleRoot()->_name << "->" << *_name << " repeated once" << std::endl;
+    // }
 
-    if (_next && static_cast<GrammarRule *>(_next)->_operator == OP_CONCATENATION)
+    if (_next)
     {
-        // std::cout << "_parse() _next found" << std::endl;
-        if (!static_cast<GrammarRule *>(_next)->_parse(inputLine, i))
+        // std::cout << "Checking if there is some next elements for sub rule " << *_getCurrentRuleRoot()->_name << "->" << *_name  << "..." << std::endl;
+        GrammarRule *next = static_cast<GrammarRule *>(_next);
+        while (next && next->_operator == OP_CONCATENATION)
         {
-            // std::cout << "_parse() _next " << *(static_cast<GrammarRule *>(_subRule))->_name << " is invalid" << std::endl;
-            i = savedIndex;
-            return false;
+            // std::cout << "Yes there is some next elements for " << *_getCurrentRuleRoot()->_name << "->" << *_name << ", checking rule validity..." << std::endl;
+            // std::cout << "Next element is " << *next->_getCurrentRuleRoot()->_name << "->" << *next->_name << std::endl;
+            if (!next->_parse(inputLine, i))
+            {
+                // std::cout << "Next sub rule element " << *next->_getCurrentRuleRoot()->_name << "->" << *next->_name << " is invalid" << std::endl << std::endl;
+                i = savedIndex;
+                return false;
+            }
+            // std::cout << "Next sub rule element " << *next->_getCurrentRuleRoot()->_name << "->" << *next->_name << " is valid" << std::endl << std::endl;
+            next = static_cast<GrammarRule *>(next->_next);
         }
     }
     return true;
@@ -93,34 +104,46 @@ bool SyntacticAnalyzer::GrammarRule::_parseValidSubRule(const TokensLine &inputL
 
 bool SyntacticAnalyzer::GrammarRule::_parseInvalidSubRule(const TokensLine &inputLine, unsigned int &i)
 {
-    GrammarRule *rule = static_cast<GrammarRule *>(static_cast<GrammarRule *>(_subRule)->_next);
-
-    // std::cout << "BEFORE checking alternative" << std::endl;
-    while (rule && rule->_operator == OP_ALTERNATIVE)
+    // std::cout << "Sub rule " << *_getCurrentRuleRoot()->_name << "->" << *_name << " is invalid, checking alternative or repetition escapes" << std::endl;
+    if (_next)
     {
-        // std::cout << "Trying next alternative " << *rule->_name << std::endl;
-        if (rule->_parse(inputLine, i))
-            return true;
-        rule = static_cast<GrammarRule *>(rule->_next);
-    }
+        GrammarRule *alt = static_cast<GrammarRule *>(_next);
 
-    // std::cout << "sub rule " << *(static_cast<GrammarRule *>(_subRule))->_name << " is invalid" << std::endl << std::endl;
+        // std::cout << "Is there any alternative for " << *_getCurrentRuleRoot()->_name << "->" << *_name << " ?" << std::endl;
+        while (alt && alt->_operator == OP_ALTERNATIVE)
+        {
+            // std::cout << "Yeah, one alternative found, checking validity..." << std::endl;
+            if (alt->_parse(inputLine, i))
+            {
+                // std::cout << "Alternative found for " << *_getCurrentRuleRoot()->_name << "->" << *_name << std::endl << std::endl;
+                alt = static_cast<GrammarRule *>(alt->_getCurrentRuleRoot());
+                return true;
+            }
+            // std::cout << "Checking next alternative..." << std::endl;
+            alt = static_cast<GrammarRule *>(alt->_next);
+        }
+    }
     if (_repetitionMin == 0)
     {
-        // std::cout << "But repetition min = 0, so it's okay" << std::endl;
+        // std::cout << "But repetition = 0 it's okay" << std::endl << std::endl;
         return true;
     }
+    // std::cout << "Sub rule " << *_getCurrentRuleRoot()->_name << "->" << *_name << " is invalid" << std::endl << std::endl;
     return false;
 }
 
 bool SyntacticAnalyzer::GrammarRule::_parseToken(const TokensLine &inputLine, unsigned int &i)
 {
-    // std::cout << "_parse() token != UNKNOWN | " << inputLine[i]->type() << " | " << _expectedToken << std::endl;
+    // std::cout << "_parse() token != UNKNOWN | " << _expectedToken << std::endl;
     if (i < inputLine.size() && inputLine[i]->type() == _expectedToken)
     {
-        // std::cout << "input is valid" << std::endl;
-        // std::cout << "Found valid token | Type = " << _expectedToken << "\t| Value = ' " << inputLine[i]->raw() << " '" << std::endl;
+        std::cout << "Found valid token | Type = " << _expectedToken << "\t| Value = ' " << inputLine[i]->raw() << " '" << std::endl;
         ++i;
+        return true;
+    }
+    else if (i >= inputLine.size() && _repetitionMin == 0)
+    {
+        // std::cout << "_parseToken | i >= inputLine.size() && _repetitionMin == 0 -> return true" << std::endl;
         return true;
     }
     return false;
@@ -131,8 +154,13 @@ bool SyntacticAnalyzer::GrammarRule::_parseStringValue(const TokensLine &inputLi
     // std::cout << "_parse() _expectedValue found" << std::endl;
     if (i < inputLine.size() && inputLine[i]->raw() == *_expectedValue)
     {
-        // std::cout << "Found valid string\t\t| Value = ' " << inputLine[i]->raw() << " '" << std::endl;
+        std::cout << "Found valid string\t\t| Value = ' " << inputLine[i]->raw() << " '" << std::endl;
         ++i;
+        return true;
+    }
+    else if (i >= inputLine.size() && _repetitionMin == 0)
+    {
+        // std::cout << "_parseStringValue | i >= inputLine.size() && _repetitionMin == 0 -> return true" << std::endl;
         return true;
     }
     return false;
@@ -141,7 +169,6 @@ bool SyntacticAnalyzer::GrammarRule::_parseStringValue(const TokensLine &inputLi
 bool SyntacticAnalyzer::GrammarRule::_burnUntilEndOfLine(const TokensLine &inputLine, unsigned int &i)
 {
     // std::cout << "_parse() _burnUntilEOL found" << std::endl;
-    // std::cout << "Found burn until EOL" << std::endl;
     i = inputLine.size();
     return true;
 }

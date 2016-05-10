@@ -43,16 +43,16 @@ const GrammarDeclaration SyntacticAnalyzer::_grammar =
     { "metaNameDeclaration", "=", "metaName", "+", "blankSpace", "+", "quotedStr" },
     { "metaCommentDeclaration", "=", "metaComment", "+", "blankSpace", "+", "quotedStr" },
 
-    { "assemblyDeclaration", "=", "metaNameDeclaration", "|", "metaCommentDeclaration", "|", "labelDeclaration", "|", "instructionDeclaration", "|", "labelAndInstructionDeclaration" },
+    { "assemblyDeclaration", "=", "metaNameDeclaration", "|", "metaCommentDeclaration", "|", "labelAndInstructionDeclaration", "|", "instructionDeclaration", "|", "labelDeclaration" },
 
     { "instructionDeclaration", "=", "instructionName", "+", "optionalBlankSpace", "+", "instructionParameters" },
     { "labelAndInstructionDeclaration", "=", "labelDeclaration", "+", "optionalBlankSpace", "+", "instructionDeclaration" },
 
     { "firstParameter", "=", "instructionParameter" },
-    { "nthParameter", "=", "(", "optionalBlankSpace", "+", "parameterSeparatorChar", "+", "optionalBlankSpace", "+", "instructionParameter", ")", "0*x" },
+    { "nthParameter", "=", "(", "optionalBlankSpace", "+", "parameterSeparatorChar", "+", "optionalBlankSpace", "+", "instructionParameter", ")", "0*16" },
     { "instructionParameters", "=", "firstParameter", "+", "nthParameter" },
 
-    { "instructionParameter", "=", "registerParameter", "+", "directValueParameter", "+", "indirectValueParameter" },
+    { "instructionParameter", "=", "registerParameter", "|", "directValueParameter", "|", "indirectValueParameter" },
 
     { "registerParameter", "=", "'r'", "+", "decimalNumber" },
     { "directValue", "=", "decimalNumber", "|", "labelValue" },
@@ -173,20 +173,20 @@ bool SyntacticAnalyzer::_parseInput(const TokensLines &tokenizedFile)
 //     }
 //
 //     std::cout << tabulations;
-//     std::cout << (rule->_name ? *(rule->_name) : "Unknown name") << " = ";
+//     std::cout << (rule->name() ? *(rule->name()) : "Unknown name") << " = ";
 //
 //     while (next)
 //     {
 //         std::cout << (char)next->_operator << " ";
 //         if (next->_subRule)
 //         {
-//             std::cout << (next->_subRule->_name ? *(next->_subRule->_name) : "Unknown name");
+//             std::cout << (next->_subRule->name() ? *(next->_subRule->name()) : "Unknown name");
 //         }
 //         else if (next->_expectedValue)
 //         {
 //             std::cout << "\"" << *(next->_expectedValue) << "\"";
 //         }
-//         else if (next->_expectedToken != Tokenizer::Token::eType::UNKNOWN)
+//         else if (next->_expectedToken != Token::eType::UNKNOWN)
 //         {
 //             std::cout << next->_expectedToken;
 //         }
