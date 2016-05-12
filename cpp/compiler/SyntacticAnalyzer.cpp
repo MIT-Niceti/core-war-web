@@ -91,7 +91,7 @@ SyntacticAnalyzer::~SyntacticAnalyzer()
 {
 }
 
-void *SyntacticAnalyzer::createTree(const TokensLines &tokenizedFile)
+ParsedLines *SyntacticAnalyzer::createTree(const TokensLines &tokenizedFile)
 {
     if (!_initGrammarMap() || !_initGrammarTree())
         return NULL;
@@ -99,10 +99,7 @@ void *SyntacticAnalyzer::createTree(const TokensLines &tokenizedFile)
     // std::cout << std::endl;
     // _readCreatedGrammarTree(_rootRule);
 
-    if (!_parseInput(tokenizedFile))
-        return NULL;
-
-    return NULL;
+    return _parseInput(tokenizedFile);
 }
 
 bool SyntacticAnalyzer::_initGrammarMap()
@@ -148,17 +145,25 @@ bool SyntacticAnalyzer::_initGrammarTree()
     return _rootRule->createTree();
 }
 
-bool SyntacticAnalyzer::_parseInput(const TokensLines &tokenizedFile)
+ParsedLines *SyntacticAnalyzer::_parseInput(const TokensLines &tokenizedFile)
 {
     GrammarRule *rootRule = static_cast<GrammarRule *>(_rootRule);
+    ParsedLines *output = new ParsedLines;
+    AOutput *tmp = NULL;
 
     for (unsigned int line = 0; line != tokenizedFile.size(); ++line)
     {
-        // if (!rootRule->parseLine(*tokenizedFile[line]))
-        //     return false;
-        rootRule->parseLine(*tokenizedFile[line]);
+        if (!(tmp = rootRule->parseLine(*tokenizedFile[line])))
+            return NULL;
+        output->push_back(tmp);
+        // rootRule->parseLine(*tokenizedFile[line]);
     }
-    return true;
+    if (output->empty())
+    {
+        delete output;
+        output = NULL;
+    }
+    return output;
 }
 
 // // Debug

@@ -147,7 +147,7 @@ bool SyntacticAnalyzer::GrammarRule::_parseToken(const TokensLine &inputLine, un
     // std::cout << "_parse() token != UNKNOWN | " << _expectedToken << std::endl;
     if (i < inputLine.size() && inputLine[i]->type() == _expectedToken)
     {
-        std::cout << "Found valid token | Type = " << _expectedToken << "\t| Value = ' " << inputLine[i]->raw() << " '" << std::endl;
+        // std::cout << "Found valid token | Type = " << _expectedToken << "\t| Value = ' " << inputLine[i]->raw() << " '" << std::endl;
         output->addElement(inputLine[i], i);
         ++i;
         return true;
@@ -165,7 +165,7 @@ bool SyntacticAnalyzer::GrammarRule::_parseStringValue(const TokensLine &inputLi
     // std::cout << "_parse() _expectedValue found" << std::endl;
     if (i < inputLine.size() && inputLine[i]->raw() == *_expectedValue)
     {
-        std::cout << "Found valid string\t\t| Value = ' " << inputLine[i]->raw() << " '" << std::endl;
+        // std::cout << "Found valid string\t\t| Value = ' " << inputLine[i]->raw() << " '" << std::endl;
         output->addElement(inputLine[i], i);
         ++i;
         return true;

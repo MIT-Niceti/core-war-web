@@ -92,12 +92,12 @@ AOutput *ParserOutput::finalizeOutput()
 {
     auto rIt = _output.rbegin();
 
-    std::cout << "There is " << _output.size() << " element(s)" << std::endl;
-    while (rIt != _output.rend())
-    {
-        (*rIt)->print();
-        ++rIt;
-    }
+    // std::cout << "There is " << _output.size() << " element(s)" << std::endl;
+    // while (rIt != _output.rend())
+    // {
+    //     (*rIt)->print();
+    //     ++rIt;
+    // }
 
     // Hmm its dirty
     rIt = _output.rbegin();

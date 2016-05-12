@@ -16,11 +16,11 @@ Compiler::~Compiler()
 void Compiler::run()
 {
     SyntacticAnalyzer analyzer;
-    void *tree = NULL;
+    ParsedLines *output = NULL;
 
     _runTokenizer();
-    tree = analyzer.createTree(_tokenizedFile);
-    (void)tree;
+    if (!(output = analyzer.createTree(_tokenizedFile)))
+        return ;
 }
 
 void Compiler::_runTokenizer()

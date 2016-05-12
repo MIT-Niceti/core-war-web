@@ -3,12 +3,14 @@
 
 # include "Tokenizer.hh"
 # include "Token.hh"
+# include "AOutput.hh"
 # include <vector>
 # include <map>
 # include <string>
 
 typedef std::vector<std::vector<std::string> > GrammarDeclaration;
 typedef std::vector<std::string> GrammarRuleDeclaration;
+typedef std::vector<AOutput *> ParsedLines;
 
 class SyntacticAnalyzer
 {
@@ -24,12 +26,12 @@ public:
     SyntacticAnalyzer();
     ~SyntacticAnalyzer();
 
-    void *createTree(const TokensLines &tokenizedFile);
+    ParsedLines *createTree(const TokensLines &tokenizedFile);
 
 private:
     bool _initGrammarMap();
     bool _initGrammarTree();
-    bool _parseInput(const TokensLines &tokenizedFile);
+    ParsedLines *_parseInput(const TokensLines &tokenizedFile);
     // void _readCreatedGrammarTree(BNFRule *, int = 0);
 };
 
