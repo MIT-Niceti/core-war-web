@@ -11,15 +11,14 @@ void Replay::dumpReplay(void)
 			<< " entry point: " << it->entryPoint << std::endl;
 	}
 	std::cout << "\nII- Modif list:" << std::endl;
-	for (std::vector<OpLog>::iterator ite = modifList.begin(); ite != modifList.end(); ++ite)
+	for (std::list<std::vector<DataCell>>::iterator ite = this->snapshot.begin(); ite != this->snapshot.end(); ++ite)
 	{
-		std::cout << "	- Cycle" << ite->cycle << " Champion id: " << ite->championId
-			<< " Op: " << ite->op << " Value: " << ite->wrote	<< " At ";
-		if (ite->reg)
-			std::cout << "register: ";
-		else
-			std::cout << "adress: ";
-		std::cout << ite->at << std::endl;
+		std::cout << "SNAPSHOT: " << std::endl;
+		for (std::vector<DataCell>::iterator snap = ite->begin(); snap != ite->end(); snap++)
+		{
+			std::cout << "Champion id: " << snap->championId << " at position: " << snap->coord << std::endl;
+		}
+		std::cout << "------" << std::endl;
 	}
 }
 
@@ -44,37 +43,87 @@ std::string Replay::serialize(int winnerId)
 		if ((it + 1) != champions.end())
 			json << ',';
 	}
-	json << "],\"modifList\": [";
-	for (std::vector<OpLog>::iterator ite = modifList.begin(); ite != modifList.end(); ++ite)
+	json << "],\"modifList\": ";
+	json << "[";
+	for (std::list<std::vector<DataCell>>::iterator ite = this->snapshot.begin(); ite != this->snapshot.end(); ++ite)
 	{
-		json << '{' << "\"cycle\": " << ite->cycle << ','
-			<< "\"championId\": " << ite->championId << ','
-			<< "\"op\": \"" << ite->op << "\","
-			<< "\"wrote\": " << ite->wrote << ','
-			<< "\"at\": " << ite->at;
-		if (ite->reg)
-			json << ",\"reg\": \"true\"";
-		json << "}";
-		if ((ite + 1) != modifList.end())
+		json << "[";
+		for (std::vector<DataCell>::iterator snap = ite->begin(); snap != ite->end(); snap++)
+		{
+			json << "{";
+			json << " \"championId\": " << snap->championId << " ,";
+			json << " \"position\":" << snap->coord;
+			json << "}";
+			if ((snap + 1) != ite->end())
+				json << ',';
+		}
+		json << "]";
+		if (++ite != this->snapshot.end())
 			json << ',';
+		--ite;
 	}
-	json << "]}}";
+	json << "]";
+	json << "}}";
 	return json.str();
 }
 
-bool Replay::addEvent(int cycle, int championId, std::string &championName, std::string &op,
+bool Replay::saveSnapshot()
+{
+	int	i = 0;
+	DataCell elem;
+	std::vector<DataCell> vector = std::vector<DataCell>();
+
+	while (i != 6 * 1024)
+	{
+		if (this->modifTab[i].changed)
+		{
+			elem.championId = this->modifTab[i].championId;
+			elem.coord = i;
+			vector.push_back(elem);
+			this->modifTab[i].changed = false;
+		}
+		++i;
+	}
+	if (vector.size() >= 1)
+		this->snapshot.push_back(vector);
+	return true;
+}
+
+bool Replay::addEvent(int championId, std::string &op,
 						int wrote, int at, bool reg)
 {
-	OpLog log;
+	int		i = 0;
 
-	log.at = at;
-	log.wrote = wrote;
+//	log.at = at;
+	if (at != -1 && reg == false) {
+		if (op == "Fork" || op == "Lfork")
+		{
+			while (i != wrote) {
+				if (at == 1024 * 6)
+					at = 0;
+				if (this->modifTab[at].championId != championId) {
+					this->modifTab[at].championId = championId;
+					this->modifTab[at].changed = true;
+				}
+				++i;
+				++at;
+			}
+		}
+		else
+		{
+			if (this->modifTab[at].championId != championId) {
+				this->modifTab[at].championId = championId;
+				this->modifTab[at].changed = true;
+			}
+		}
+	}
+/*	log.wrote = wrote;
 	log.op = op;
 	log.reg = reg;
 	log.championId = championId;
 	log.cycle = cycle;
 	log.championName = championName;
-	this->modifList.push_back(log);
+	this->modifList.push_back(log);*/
 	return true;
 }
 
@@ -86,6 +135,13 @@ bool Replay::setReplay(std::vector<ChampionRecap> &champions)
 
 Replay::Replay()
 {
+	int	i = 0;
+
+	while (i != 6 * 1024) {
+		this->modifTab[i].championId = -1;
+		this->modifTab[i].changed = false;
+		++i;
+	}
 }
 
 

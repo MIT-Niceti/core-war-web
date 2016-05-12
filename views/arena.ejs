@@ -39,7 +39,7 @@
         championColour.push(colourTab[i++]);
         counter = champion.entryPoint;
         champion.init.forEach(function (val) {
-          d3.select("#r" + counter).transition().duration(300).style('fill', championColour[champion.id - 1]);
+          d3.select("#r" + counter).transition().duration(500).style('fill', championColour[champion.id - 1]);
           ++counter;
           if (counter == 6 * 1024)
             counter = 0;
@@ -54,32 +54,12 @@
       var counter = 0;
       var flag = 0;
 
-      console.log('TOtal size: ' + Arena.replay.modifList.length);
-      Arena.replay.modifList.forEach(function (modif) {
-        if (modif.cycle > currentCycle + 500) {
-            currentCycle = modif.cycle;
-          }
-        if (modif.reg != "true")
-        {
-          if (modif.wrote != -1 && modif.at != -1)
-          {
-              d3.select("#r" + modif.at).transition().duration(300).style('fill', championColour[modif.championId - 1]);
-          }
-          if (modif.op == "Fork") {
-            flag = 1;
-            counter = modif.at;
-              Arena.replay.champions[modif.championId - 1].init.forEach(function (val){
-                var selected = d3.select("#r" + counter);
-//                if (d3.select("#r" + counter).style('fill') != championColour[modif.championId - 1])
-//                if (selected.style('fill') != championColour[modif.championId - 1])
-//                  selected.transition().duration(100).style('fill', championColour[modif.championId - 1]);
-                ++counter;
-                if (counter == 6 * 1024)
-                  counter = 0;
-              });
-          }
-          counter = 0;
-        }
+      Arena.replay.modifList.forEach(function (snapshot) {
+//        setInterval(function () {
+          snapshot.forEach(function (modif) {
+            d3.select("#r" + modif.position).transition().duration(3000).style('fill', championColour[modif.championId - 1]);
+          });
+//        }, 10000);
       });
       console.log('Done');
     }
@@ -108,10 +88,8 @@
     })
     .attr('height', 10)
     .attr('width', 10)
-    .transition().duration(100);
-    console.log('hey');
+    .transition().duration(200);
     var tab = loadChampions();
-    var i = 0;
     doTurn(tab);
   </script>
 </html>

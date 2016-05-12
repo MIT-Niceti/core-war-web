@@ -15,6 +15,11 @@ std::string Champion::getName()
 	return std::string(this->header.name);
 }
 
+s_header Champion::getHeader()
+{
+	return (this->header);
+}
+
 void Champion::addProcess(int pc)
 {
 	this->processes.push_back(Process(this, pc));

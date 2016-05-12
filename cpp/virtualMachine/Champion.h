@@ -22,6 +22,7 @@ private:
 public:
 	int					id;
 	bool				live;
+	s_header getHeader();
 	void fork(Process &process, int pc, Arena &arena);
 	void addProcess(int pc);
 	bool doCycle(Arena &arena);
