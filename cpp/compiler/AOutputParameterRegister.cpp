@@ -18,3 +18,8 @@ void AOutput::ParameterRegister::metamorhose()
     convert >> _register;
     std::cout << "Metamorphosing parameter register -> r" << _register << std::endl;
 }
+
+unsigned int AOutput::ParameterRegister::registerNumber() const
+{
+    return _register;
+}

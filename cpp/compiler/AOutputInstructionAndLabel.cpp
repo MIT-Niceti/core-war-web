@@ -30,3 +30,13 @@ void AOutput::InstructionAndLabel::metamorhose()
         element = element->_next;
     }
 }
+
+AOutput::Label *AOutput::InstructionAndLabel::label()
+{
+    return _label;
+}
+
+AOutput::Instruction *AOutput::InstructionAndLabel::instruction()
+{
+    return _instruction;
+}

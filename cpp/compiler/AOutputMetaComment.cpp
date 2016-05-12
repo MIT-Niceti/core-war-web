@@ -23,3 +23,8 @@ void AOutput::MetaComment::metamorhose()
     }
     std::cout << "Metamorphosing meta comment -> \"" << _comment << "\"" << std::endl;
 }
+
+const std::string &AOutput::MetaComment::value() const
+{
+    return _comment;
+}

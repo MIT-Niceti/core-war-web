@@ -43,3 +43,19 @@ void AOutput::ParameterIndirect::metamorhose()
     else
         std::cout << _indirectValue << std::endl;
 }
+
+
+bool AOutput::ParameterIndirect::isLabel() const
+{
+    return !_labelValue.empty();
+}
+
+const std::string &AOutput::ParameterIndirect::labelValue() const
+{
+    return _labelValue;
+}
+
+unsigned int AOutput::ParameterIndirect::numericValue() const
+{
+    return _indirectValue;
+}

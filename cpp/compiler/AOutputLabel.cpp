@@ -21,3 +21,8 @@ void AOutput::Label::metamorhose()
     }
     std::cout << "Metamorphosing label -> " << _label << std::endl;
 }
+
+const std::string &AOutput::Label::name() const
+{
+    return _label;
+}

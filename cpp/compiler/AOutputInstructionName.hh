@@ -14,7 +14,7 @@ public:
 
     virtual void metamorhose();
 
-    const std::string &name() const;
+    const std::string &value() const;
 };
 
 #endif		// !AOUTPUT_INSTRUCTION_NAME_HH_

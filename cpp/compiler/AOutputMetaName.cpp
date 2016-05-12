@@ -23,3 +23,8 @@ void AOutput::MetaName::metamorhose()
     }
     std::cout << "Metamorphosing meta name -> \"" << _name << "\"" << std::endl;
 }
+
+const std::string &AOutput::MetaName::value() const
+{
+    return _name;
+}

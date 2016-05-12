@@ -43,3 +43,13 @@ void AOutput::Instruction::metamorhose()
         element = element->_prev;
     }
 }
+
+const std::string &AOutput::Instruction::name() const
+{
+    return _name->value();
+}
+
+const std::vector<AOutput *> &AOutput::Instruction::parameters() const
+{
+    return _parameters;
+}

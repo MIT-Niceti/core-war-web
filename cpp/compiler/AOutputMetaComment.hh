@@ -14,7 +14,7 @@ public:
 
     virtual void metamorhose();
 
-    const std::string &comment() const;
+    const std::string &value() const;
 };
 
 #endif		// !AOUTPUT_META_COMMENT_HH_
