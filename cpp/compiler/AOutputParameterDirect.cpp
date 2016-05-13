@@ -1,9 +1,8 @@
 #include "AOutputParameterDirect.hh"
-#include <sstream>
 #include <iostream>
 
 AOutput::ParameterDirect::ParameterDirect(ParserOutput::eType type, std::vector<ParserOutput::element *> *elements)
-    : AOutput(type, elements)
+    : AOutput(type, elements), _isLabel(false)
 {
 }
 
@@ -13,48 +12,31 @@ AOutput::ParameterDirect::~ParameterDirect()
 
 void AOutput::ParameterDirect::metamorhose()
 {
-    bool labelValue = false;
-    std::string value;
-
     for (ParserOutput::element *element : *_elements)
     {
         if (element->token->raw() == ":")
-            labelValue = true;
+            _isLabel = true;
         else if (element->token->raw() != "%")
         {
-            if (labelValue)
-                value.append(element->token->raw());
+            if (_isLabel)
+                _value.append(element->token->raw());
             else
-                value = element->token->raw();
+                _value = element->token->raw();
         }
     }
 
-    if (labelValue)
-        _labelValue = value;
-    else
-    {
-        std::istringstream convert(value);
-        convert >> _directValue;
-    }
-
-    std::cout << "Metamorphosing parameter direct -> ";
-    if (_labelValue.size())
-        std::cout << "label: " << _labelValue << std::endl;
-    else
-        std::cout << _directValue << std::endl;
+    std::cout << "Metamorphosing direct parameter -> ";
+    if (_isLabel)
+        std::cout << "label: ";
+    std::cout << _value << std::endl;
 }
 
 bool AOutput::ParameterDirect::isLabel() const
 {
-    return !_labelValue.empty();
+    return _isLabel;
 }
 
-const std::string &AOutput::ParameterDirect::labelValue() const
+const std::string &AOutput::ParameterDirect::value() const
 {
-    return _labelValue;
-}
-
-unsigned int AOutput::ParameterDirect::numericValue() const
-{
-    return _directValue;
+    return _value;
 }

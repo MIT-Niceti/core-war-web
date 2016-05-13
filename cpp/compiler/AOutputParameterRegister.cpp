@@ -13,13 +13,11 @@ AOutput::ParameterRegister::~ParameterRegister()
 
 void AOutput::ParameterRegister::metamorhose()
 {
-    std::istringstream convert((*_elements)[1]->token->raw());
-
-    convert >> _register;
+    _register = (*_elements)[1]->token->raw();
     std::cout << "Metamorphosing parameter register -> r" << _register << std::endl;
 }
 
-unsigned int AOutput::ParameterRegister::registerNumber() const
+const std::string &AOutput::ParameterRegister::registerNumber() const
 {
     return _register;
 }

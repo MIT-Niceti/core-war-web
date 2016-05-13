@@ -4,24 +4,31 @@ CXX		=	g++
 
 RM		=	rm -f
 
-SRCS		=	main.cpp			\
-			Compiler.cpp			\
-			Tokenizer.cpp			\
-			Token.cpp			\
-			SyntacticAnalyzer.cpp		\
-			BNFRule.cpp			\
-			GrammarRule.cpp			\
-			ParserOutput.cpp		\
-			AOutput.cpp			\
-			AOutputMetaName.cpp		\
-			AOutputMetaComment.cpp		\
-			AOutputInstruction.cpp		\
-			AOutputLabel.cpp		\
-			AOutputInstructionAndLabel.cpp	\
-			AOutputInstructionName.cpp	\
-			AOutputParameterRegister.cpp	\
-			AOutputParameterDirect.cpp	\
-			AOutputParameterIndirect.cpp
+SRCS		=	main.cpp				\
+			Compiler.cpp				\
+			Tokenizer.cpp				\
+			Token.cpp				\
+			SyntacticAnalyzer.cpp			\
+			BNFRule.cpp				\
+			GrammarRule.cpp				\
+			ParserOutput.cpp			\
+			AOutput.cpp				\
+			AOutputMetaName.cpp			\
+			AOutputMetaComment.cpp			\
+			AOutputInstruction.cpp			\
+			AOutputLabel.cpp			\
+			AOutputInstructionAndLabel.cpp		\
+			AOutputInstructionName.cpp		\
+			AOutputParameterRegister.cpp		\
+			AOutputParameterDirect.cpp		\
+			AOutputParameterIndirect.cpp		\
+			Translator.cpp				\
+			Champion.cpp				\
+			ChampionHeader.cpp			\
+			ChampionInstruction.cpp			\
+			ChampionInstructionOpCode.cpp		\
+			ChampionInstructionParameter.cpp	\
+			ChampionInstructionParameters.cpp
 
 OBJS		=	$(SRCS:.cpp=.o)
 

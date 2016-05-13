@@ -6,8 +6,8 @@
 
 class AOutput::ParameterDirect : public AOutput
 {
-    unsigned int _directValue;
-    std::string _labelValue;
+    std::string _value;
+    bool _isLabel;
 
 public:
     ParameterDirect(ParserOutput::eType, std::vector<ParserOutput::element *> *);
@@ -16,8 +16,7 @@ public:
     virtual void metamorhose();
 
     bool isLabel() const;
-    const std::string &labelValue() const;
-    unsigned int numericValue() const;
+    const std::string &value() const;
 };
 
 #endif		// !AOUTPUT_PARAMETER_DIRECT_HH_

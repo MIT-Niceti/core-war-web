@@ -15,7 +15,7 @@ public:
     Compiler(const std::string &);
     ~Compiler();
 
-    void run();
+    bool run();
 
 private:
     void _runTokenizer();

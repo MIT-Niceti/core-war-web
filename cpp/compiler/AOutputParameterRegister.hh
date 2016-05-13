@@ -7,7 +7,7 @@
 class AOutput::ParameterRegister : public AOutput
 {
 private:
-    unsigned int _register;
+    std::string _register;
 
 public:
     ParameterRegister(ParserOutput::eType, std::vector<ParserOutput::element *> *);
@@ -15,7 +15,7 @@ public:
 
     virtual void metamorhose();
 
-    unsigned int registerNumber() const;
+    const std::string &registerNumber() const;
 };
 
 #endif		// !AOUTPUT_PARAMETER_REGISTER_HH_

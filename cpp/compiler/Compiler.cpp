@@ -1,5 +1,6 @@
 #include "Compiler.hh"
 #include "SyntacticAnalyzer.hh"
+#include "Translator.hh"
 #include <string>
 #include <fstream>
 #include <iostream>
@@ -13,14 +14,16 @@ Compiler::~Compiler()
 {
 }
 
-void Compiler::run()
+bool Compiler::run()
 {
     SyntacticAnalyzer analyzer;
+    Translator translator;
     ParsedLines *output = NULL;
 
     _runTokenizer();
-    if (!(output = analyzer.createTree(_tokenizedFile)))
-        return ;
+    return ((output = analyzer.createTree(_tokenizedFile)) &&
+        translator.translate(output) &&
+        translator.write());
 }
 
 void Compiler::_runTokenizer()
