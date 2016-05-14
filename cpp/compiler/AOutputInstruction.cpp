@@ -14,7 +14,7 @@ void AOutput::Instruction::metamorhose()
 {
     AOutput *element = _next;
 
-    std::cout << "Metamorphosing instruction" << std::endl;
+    // std::cout << "Metamorphosing instruction" << std::endl;
     while (element && element->_next)
         element = element->_next;
     while (element)

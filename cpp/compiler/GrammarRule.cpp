@@ -13,20 +13,20 @@ AOutput *SyntacticAnalyzer::GrammarRule::parseLine(const TokensLine &inputLine)
     // std::cout << "\t\t\t\t ### 4242424242424242424242424242" << std::endl << std::endl;
     for (unsigned int i = 0; i != inputLine.size(); ++i)
     {
-        std::cout << "[" << inputLine[i]->raw() << "] ";
+        // std::cout << "[" << inputLine[i]->raw() << "] ";
     }
-    std::cout << std::endl;
+    // std::cout << std::endl;
 
     unsigned int i = 0;
     if (_parse(inputLine, i, outputGenerator))
     {
         // std::cout << "\t\t\t\t ### Input is valid" << std::endl << std::endl;
         output = outputGenerator->finalizeOutput();
-        std::cout << "### Input is valid" << std::endl << std::endl;
+        // std::cout << "### Input is valid" << std::endl << std::endl;
         return output;
     }
     // std::cout << "\t\t\t\t ### Input is invalid" << std::endl << std::endl;
-    std::cout << "### Input is invalid" << std::endl << std::endl;
+    // std::cout << "### Input is invalid" << std::endl << std::endl;
     return output;
 }
 

@@ -14,7 +14,7 @@ void AOutput::InstructionAndLabel::metamorhose()
 {
     AOutput *element = _next;
 
-    std::cout << "Metamorphosing instruction and label" << std::endl;
+    // std::cout << "Metamorphosing instruction and label" << std::endl;
     while (element)
     {
         if (element->type() == ParserOutput::eType::INSTRUCTION)

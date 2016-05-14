@@ -21,7 +21,7 @@ void AOutput::MetaComment::metamorhose()
         if (string && element->token->raw() != "\"")
             _comment.append(element->token->raw());
     }
-    std::cout << "Metamorphosing meta comment -> \"" << _comment << "\"" << std::endl;
+    // std::cout << "Metamorphosing meta comment -> \"" << _comment << "\"" << std::endl;
 }
 
 const std::string &AOutput::MetaComment::value() const

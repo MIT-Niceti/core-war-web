@@ -21,7 +21,7 @@ void AOutput::MetaName::metamorhose()
         if (string && element->token->raw() != "\"")
             _name.append(element->token->raw());
     }
-    std::cout << "Metamorphosing meta name -> \"" << _name << "\"" << std::endl;
+    // std::cout << "Metamorphosing meta name -> \"" << _name << "\"" << std::endl;
 }
 
 const std::string &AOutput::MetaName::value() const

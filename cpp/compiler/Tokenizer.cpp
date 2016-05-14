@@ -16,7 +16,7 @@ const TokensLine *Tokenizer::tokenizeLine(const std::string &line)
     const char *linePtr = line.c_str();
     unsigned int lineIndex = 0;
 
-    std::cout << line << std::endl;
+    // std::cout << line << std::endl;
     while (lineIndex != line.size())
         _fillTokensList(linePtr, lineIndex, tokens);
     if (!_checkTokensLine(tokens))
@@ -60,7 +60,8 @@ bool Tokenizer::_checkTokensLine(TokensLine *tokens) const
         // std::cout << "Token | type = " << token->type() << " | value ='" << token->raw() << "'" << std::endl;
         if (token->type() == Token::eType::UNKNOWN)
         {
-            std::cerr << "Invalid token \"" << token->raw() << "\"" << std::endl;
+            // std::cerr << "Invalid token \"" << token->raw() << "\"" << std::endl;
+            std::cerr << "Invalid token" << std::endl;
             return false;
         }
     }

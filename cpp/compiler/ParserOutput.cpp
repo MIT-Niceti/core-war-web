@@ -119,23 +119,23 @@ AOutput *ParserOutput::finalizeOutput()
     }
 
     if (_output.back()->type() == ParserOutput::eType::META_NAME)
-        dynamic_cast<AOutput::MetaName *>(_output.back())->metamorhose();
+        static_cast<AOutput::MetaName *>(_output.back())->metamorhose();
     else if (_output.back()->type() == ParserOutput::eType::META_COMMENT)
-        dynamic_cast<AOutput::MetaComment *>(_output.back())->metamorhose();
+        static_cast<AOutput::MetaComment *>(_output.back())->metamorhose();
     else if (_output.back()->type() == ParserOutput::eType::INSTRUCTION)
-        dynamic_cast<AOutput::Instruction *>(_output.back())->metamorhose();
+        static_cast<AOutput::Instruction *>(_output.back())->metamorhose();
     else if (_output.back()->type() == ParserOutput::eType::LABEL)
-        dynamic_cast<AOutput::Label *>(_output.back())->metamorhose();
+        static_cast<AOutput::Label *>(_output.back())->metamorhose();
     else if (_output.back()->type() == ParserOutput::eType::INSTRUCTION_AND_LABEL)
-        dynamic_cast<AOutput::InstructionAndLabel *>(_output.back())->metamorhose();
+        static_cast<AOutput::InstructionAndLabel *>(_output.back())->metamorhose();
     else if (_output.back()->type() == ParserOutput::eType::INSTRUCTION_NAME)
-        dynamic_cast<AOutput::InstructionName *>(_output.back())->metamorhose();
+        static_cast<AOutput::InstructionName *>(_output.back())->metamorhose();
     else if (_output.back()->type() == ParserOutput::eType::REGISTER_PARAMETER)
-        dynamic_cast<AOutput::ParameterRegister *>(_output.back())->metamorhose();
+        static_cast<AOutput::ParameterRegister *>(_output.back())->metamorhose();
     else if (_output.back()->type() == ParserOutput::eType::DIRECT_PARAMETER)
-        dynamic_cast<AOutput::ParameterDirect *>(_output.back())->metamorhose();
+        static_cast<AOutput::ParameterDirect *>(_output.back())->metamorhose();
     else if (_output.back()->type() == ParserOutput::eType::INDIRECT_PARAMETER)
-        dynamic_cast<AOutput::ParameterIndirect *>(_output.back())->metamorhose();
+        static_cast<AOutput::ParameterIndirect *>(_output.back())->metamorhose();
 
     return _output.back();
 }

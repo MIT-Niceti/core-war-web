@@ -19,7 +19,7 @@ void AOutput::Label::metamorhose()
             _label.append(element->token->raw());
         }
     }
-    std::cout << "Metamorphosing label -> " << _label << std::endl;
+    // std::cout << "Metamorphosing label -> " << _label << std::endl;
 }
 
 const std::string &AOutput::Label::name() const

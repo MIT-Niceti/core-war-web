@@ -8,6 +8,13 @@
     <% if (user) { %>
       <h1>Update your champions</h1>
       <p>Hey <i><%= user.name %></i>, you will be soon able to access your champions library from here</p>
+      <% if (compilerResult) { %>
+        <h2>Raw test result</h2>
+          <p>Compiler result value: <%= compilerResult.status %><p>
+          <p>Compilation logs: <%= compilerResult.logs %><p>
+      <% } else { %>
+        <h2>Nope</h2>
+      <% } %>
       <p>Get back to <a href="/index.html">main page</a></p>
     <% } else { %>
       <h1>An error occured</h1>

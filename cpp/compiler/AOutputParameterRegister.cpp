@@ -14,7 +14,7 @@ AOutput::ParameterRegister::~ParameterRegister()
 void AOutput::ParameterRegister::metamorhose()
 {
     _register = (*_elements)[1]->token->raw();
-    std::cout << "Metamorphosing parameter register -> r" << _register << std::endl;
+    // std::cout << "Metamorphosing parameter register -> r" << _register << std::endl;
 }
 
 const std::string &AOutput::ParameterRegister::registerNumber() const

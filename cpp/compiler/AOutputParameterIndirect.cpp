@@ -25,10 +25,10 @@ void AOutput::ParameterIndirect::metamorhose()
         }
     }
 
-    std::cout << "Metamorphosing indirect parameter -> ";
-    if (_isLabel)
-        std::cout << "label: ";
-    std::cout << _value << std::endl;
+    // std::cout << "Metamorphosing indirect parameter -> ";
+    // if (_isLabel)
+    //     std::cout << "label: ";
+    // std::cout << _value << std::endl;
 }
 
 bool AOutput::ParameterIndirect::isLabel() const

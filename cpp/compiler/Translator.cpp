@@ -29,7 +29,12 @@ bool Translator::write(const std::string &fileName)
         std::cerr << "Error: Cannot open output file '" << fileName << "'" << std::endl;
         return false;
     }
-    return _translated.write(file);
+    if (_translated.write(file))
+    {
+        std::cout << "Done" << std::endl;
+        return true;
+    }
+    return false;
 }
 
 bool Translator::_fillOutputStructure(ParsedLines *parserOutput)
