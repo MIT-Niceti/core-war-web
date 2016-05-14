@@ -1,5 +1,5 @@
 # Core War Web
-An open source web corewar
+A Node.js/C++ corewar http server
 
 ## Pre-requisites
 * A functionnal Node.js environment
