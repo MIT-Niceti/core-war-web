@@ -13,6 +13,8 @@ private:
 public:
     Parameters(Parameter::eType, Parameter::eType = Parameter::INVALID, Parameter::eType = Parameter::INVALID);
     ~Parameters();
+
+    Parameter::eType operator[](unsigned int) const;
 };
 
 #endif		// !CHAMPION_INSTRUCTION_PARAMETERS_HH_

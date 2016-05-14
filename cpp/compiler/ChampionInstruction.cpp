@@ -26,6 +26,7 @@ const std::vector<Champion::Instruction::OpCode> Champion::Instruction::_possibl
 
 const std::vector<std::vector<Champion::Instruction::Parameters>> Champion::Instruction::_possibleParameters =
 {
+    std::vector<Parameters> {}, // Index 0, not used
     std::vector<Parameters> { // LIVE
         Parameters(Parameter::DIRECT)
     },
@@ -163,7 +164,7 @@ const std::vector<Champion::Instruction::Parameter *> &Champion::Instruction::pa
 
 bool Champion::Instruction::translate(AOutput::Instruction *input)
 {
-    return _translateOpCode(input) && _translateParameters(input->parameters());
+    return _translateOpCode(input) && _checkParameters(input->parameters()) && _translateParameters(input->parameters());
 }
 
 bool Champion::Instruction::_translateOpCode(AOutput::Instruction *input)
@@ -201,6 +202,47 @@ bool Champion::Instruction::_translateParameters(const std::vector<AOutput *> &p
         _parameters.push_back(parameter);
         isIndex = false;
         ++paramPos;
+    }
+    return true;
+}
+
+bool Champion::Instruction::_checkParameters(const std::vector<AOutput *> &parameters)
+{
+    const std::vector<Parameters> &possibleParametersForOperation = _possibleParameters[_opCode->code()];
+    unsigned int paramPos = 1;
+    bool isValid = false;
+
+    for (unsigned int inputPositionIndex = 0; inputPositionIndex != parameters.size(); ++inputPositionIndex)
+    {
+        AOutput *inputParameter = parameters[inputPositionIndex];
+
+        isValid = false;
+        for (unsigned int possiblePositionIndex = 0; possiblePositionIndex != possibleParametersForOperation.size(); ++possiblePositionIndex)
+        {
+            if (inputPositionIndex == possiblePositionIndex)
+            {
+                for (unsigned int parametersTypePossibilitesIndex = 0; !isValid && possibleParametersForOperation[possiblePositionIndex][parametersTypePossibilitesIndex] != Parameter::INVALID; ++parametersTypePossibilitesIndex)
+                {
+                    if (inputParameter->type() == ParserOutput::REGISTER_PARAMETER && possibleParametersForOperation[possiblePositionIndex][parametersTypePossibilitesIndex] == Parameter::REGISTER)
+                        isValid = true;
+                    else if (inputParameter->type() == ParserOutput::DIRECT_PARAMETER && possibleParametersForOperation[possiblePositionIndex][parametersTypePossibilitesIndex] == Parameter::DIRECT)
+                        isValid = true;
+                    else if (inputParameter->type() == ParserOutput::INDIRECT_PARAMETER && possibleParametersForOperation[possiblePositionIndex][parametersTypePossibilitesIndex] == Parameter::INDIRECT)
+                        isValid = true;
+                }
+                if (!isValid)
+                {
+                    std::cerr << "Error: Instruction '" << _opCode->name() << "' invalid parameter number " << paramPos << std::endl;
+                    return false;
+                }
+            }
+        }
+        ++paramPos;
+    }
+    if ((paramPos - 1) > possibleParametersForOperation.size())
+    {
+        std::cerr << "Error: Instruction '" << _opCode->name() << "' has too much parameters " << std::endl;
+        return false;
     }
     return true;
 }
@@ -250,7 +292,6 @@ bool Champion::Instruction::_writeParametersEncodingByte(std::ofstream &file)
     }
     while (binaryString.size() != 8)
         binaryString.push_back('0');
-    std::cout << "ins " << _opCode->name() << " param byte " << binaryString << std::endl;
     parametersByte = strtol(binaryString.c_str(), NULL, 2);
     file.write((char *)&parametersByte, sizeof(parametersByte));
     return true;

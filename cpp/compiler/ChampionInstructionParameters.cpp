@@ -12,3 +12,8 @@ Champion::Instruction::Parameters::Parameters(Parameter::eType param1, Parameter
 Champion::Instruction::Parameters::~Parameters()
 {
 }
+
+Champion::Instruction::Parameter::eType Champion::Instruction::Parameters::operator[](unsigned int paramPos) const
+{
+    return paramPos < _parametersTypes.size() ? _parametersTypes[paramPos] : Parameter::eType::INVALID;
+}

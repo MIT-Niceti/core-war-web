@@ -45,6 +45,7 @@ public:
 private:
     bool _translateOpCode(AOutput::Instruction *);
     bool _translateParameters(const std::vector<AOutput *> &);
+    bool _checkParameters(const std::vector<AOutput *> &);
 
     bool _writeParametersEncodingByte(std::ofstream &);
 };
