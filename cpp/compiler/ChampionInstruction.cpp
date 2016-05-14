@@ -2,6 +2,7 @@
 #include "ChampionInstructionOpCode.hh"
 #include "ChampionInstructionParameters.hh"
 #include <iostream>
+#include <cstdlib>
 
 const std::vector<Champion::Instruction::OpCode> Champion::Instruction::_possibleOpCodes =
 {
@@ -94,6 +95,27 @@ const std::vector<std::vector<Champion::Instruction::Parameters>> Champion::Inst
     },
 };
 
+const std::vector<bool> Champion::Instruction::_parametersEncodingByte =
+{
+    false, // Index 0, not used
+    false, // LIVE
+    true, // LD
+    true, // ST
+    false, // ADD
+    false, // SUB
+    true, // AND
+    true, // OR
+    true, // XOR
+    false, // ZJMP
+    true, // LDI
+    true, //STI
+    false, // FORK
+    true, // LLD
+    true, // LLDI
+    false, // LFORK
+    true // PRINT
+};
+
 Champion::Instruction::Instruction()
     : _opCode(NULL)
 {
@@ -128,6 +150,7 @@ unsigned int Champion::Instruction::size() const
 {
     unsigned int size = sizeof(OpCode::eOpCode);
 
+    size = _parametersEncodingByte[_opCode->code()] ? size + 1 : size;
     for (Parameter *parameter : _parameters)
         size += parameter->size();
     return size;
@@ -158,16 +181,26 @@ bool Champion::Instruction::_translateOpCode(AOutput::Instruction *input)
 
 bool Champion::Instruction::_translateParameters(const std::vector<AOutput *> &parameters)
 {
+    unsigned int paramPos = 1;
+    bool isIndex = false;
+
     for (AOutput *inputParameter : parameters)
     {
         Parameter *parameter = new Parameter;
 
-        if (!parameter->translate(inputParameter))
+        if (_opCode->code() == OpCode::FORK || _opCode->code() == OpCode::LFORK || _opCode->code() == OpCode::ZJMP ||
+            (_opCode->code() == OpCode::STI && (paramPos == 2 || paramPos == 3)))
+        {
+            isIndex = true;
+        }
+        if (!parameter->translate(inputParameter, isIndex))
         {
             delete parameter;
             return false;
         }
         _parameters.push_back(parameter);
+        isIndex = false;
+        ++paramPos;
     }
     return true;
 }
@@ -177,7 +210,48 @@ void Champion::Instruction::setOpCode(OpCode *opCode)
     _opCode = opCode;
 }
 
+void Champion::Instruction::setParameters(const std::vector<Parameter *> &parameters)
+{
+    _parameters = parameters;
+}
+
 Champion::Instruction::OpCode *Champion::Instruction::opCode()
 {
     return _opCode;
+}
+
+bool Champion::Instruction::write(std::ofstream &file)
+{
+    Instruction::OpCode::eOpCode opCode = _opCode->code();
+
+    file.write((char *)&opCode, sizeof(opCode));
+    if (!_writeParametersEncodingByte(file))
+        return false;
+    for (Parameter *parameter : _parameters)
+        parameter->write(file);
+    return true;
+}
+
+bool Champion::Instruction::_writeParametersEncodingByte(std::ofstream &file)
+{
+    std::string binaryString;
+    char parametersByte = 0;
+
+    if (!_parametersEncodingByte[_opCode->code()])
+        return true;
+    for (Parameter *parameter : _parameters)
+    {
+        if (parameter->type() == Parameter::REGISTER)
+            binaryString += "01";
+        else if (parameter->type() == Parameter::DIRECT)
+            binaryString += "10";
+        else if (parameter->type() == Parameter::INDIRECT)
+            binaryString += "11";
+    }
+    while (binaryString.size() != 8)
+        binaryString.push_back('0');
+    std::cout << "ins " << _opCode->name() << " param byte " << binaryString << std::endl;
+    parametersByte = strtol(binaryString.c_str(), NULL, 2);
+    file.write((char *)&parametersByte, sizeof(parametersByte));
+    return true;
 }

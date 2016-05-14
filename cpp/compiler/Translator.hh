@@ -14,7 +14,7 @@ public:
     ~Translator();
 
     bool translate(ParsedLines *);
-    bool write();
+    bool write(const std::string &);
 
 private:
     bool _fillOutputStructure(ParsedLines *);

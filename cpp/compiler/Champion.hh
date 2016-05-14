@@ -2,6 +2,7 @@
 # define	CHAMPION_HH_
 
 # include "AOutput.hh"
+# include <fstream>
 # include <vector>
 
 class Champion
@@ -26,13 +27,17 @@ public:
     bool translateInstruction(AOutput::Instruction *);
     bool translateInstructionAndLabel(AOutput::InstructionAndLabel *);
 
+    bool write(std::ofstream &);
+
     bool sortLabelsAndInstructions();
     bool computeLabelValues();
+    bool computeProgramSize();
 
 private:
     void _initHeader();
     bool _checkMultipleLabelDefinition();
     int _computeLabelJump(int, int);
+    bool _writeInstructions(std::ofstream &);
 };
 
 #endif		// !CHAMPION_HH_

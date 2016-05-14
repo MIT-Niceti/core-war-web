@@ -22,10 +22,11 @@ public:
     Header();
     ~Header();
 
-    bool write();
+    bool write(std::ofstream &);
 
     bool setName(AOutput::MetaName *);
     bool setComment(AOutput::MetaComment *);
+    void setProgramSize(unsigned int);
 };
 
 #endif		// !CHAMPION_HEADER_HH_

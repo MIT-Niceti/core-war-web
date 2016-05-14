@@ -16,6 +16,7 @@ public:
 private:
     static const std::vector<OpCode> _possibleOpCodes;
     static const std::vector<std::vector<Parameters>> _possibleParameters;
+    static const std::vector<bool> _parametersEncodingByte;
 
     std::string _label;
     OpCode *_opCode;
@@ -29,6 +30,7 @@ public:
     bool translate(AOutput::Instruction *);
 
     void setOpCode(OpCode *);
+    void setParameters(const std::vector<Parameter *> &);
 
     bool hasLabel() const;
     bool hasOpCode() const;
@@ -38,9 +40,13 @@ public:
 
     OpCode *opCode();
 
+    bool write(std::ofstream &);
+
 private:
     bool _translateOpCode(AOutput::Instruction *);
     bool _translateParameters(const std::vector<AOutput *> &);
+
+    bool _writeParametersEncodingByte(std::ofstream &);
 };
 
 #endif		// !CHAMPION_INSTRUCTION_HH_

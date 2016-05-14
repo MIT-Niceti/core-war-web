@@ -1,9 +1,10 @@
 #include "ChampionInstructionParameter.hh"
+#include "Endianness.hh"
 #include <sstream>
 #include <iostream>
 
 Champion::Instruction::Parameter::Parameter()
-    : _type(INVALID)
+    : _type(INVALID), _isIndex(false)
 {
 }
 
@@ -11,8 +12,9 @@ Champion::Instruction::Parameter::~Parameter()
 {
 }
 
-bool Champion::Instruction::Parameter::translate(AOutput *parameter)
+bool Champion::Instruction::Parameter::translate(AOutput *parameter, bool isIndex)
 {
+    _isIndex = isIndex;
     if (parameter->type() == ParserOutput::REGISTER_PARAMETER)
         return _translateRegisterParameter(static_cast<AOutput::ParameterRegister *>(parameter));
     else if (parameter->type() == ParserOutput::DIRECT_PARAMETER)
@@ -22,12 +24,12 @@ bool Champion::Instruction::Parameter::translate(AOutput *parameter)
     return false;
 }
 
-void Champion::Instruction::Parameter::setDirectValue(int value)
+void Champion::Instruction::Parameter::setDirectValue(int32_t value)
 {
     _directValue = value;
 }
 
-void Champion::Instruction::Parameter::setIndirectValue(short value)
+void Champion::Instruction::Parameter::setIndirectValue(int16_t value)
 {
     _indirectValue = value;
 }
@@ -104,11 +106,48 @@ const std::string &Champion::Instruction::Parameter::label() const
 
 unsigned int Champion::Instruction::Parameter::size() const
 {
-    if (_type == REGISTER)
+    if (_type == REGISTER && !_isIndex)
         return sizeof(_registerNumber);
-    else if (_type == DIRECT)
+    else if (_type == DIRECT && !_isIndex)
         return sizeof(_directValue);
-    else if (_type == INDIRECT)
+    else if (_type == INDIRECT || _isIndex)
         return sizeof(_indirectValue);
     return 0;
+}
+
+bool Champion::Instruction::Parameter::isIndex() const
+{
+    return _isIndex;
+}
+
+bool Champion::Instruction::Parameter::write(std::ofstream &file)
+{
+    if (_type == REGISTER && !_isIndex)
+        file.write((char *)&_registerNumber, sizeof(_registerNumber));
+    else if (_type == DIRECT && !_isIndex)
+    {
+        int32_t value = Endianness::toInt32BigEndian(_directValue);
+
+        file.write((char *)(void *)&value, sizeof(_directValue));
+    }
+    else if (_type == INDIRECT && !_isIndex)
+    {
+        int16_t value = Endianness::toInt16BigEndian(_indirectValue);
+
+        file.write((char *)(void *)&value, sizeof(_indirectValue));
+    }
+    else if (_isIndex)
+    {
+        int16_t indexValue = 0;
+
+        if (_type == REGISTER)
+            indexValue = _registerNumber;
+        else if (_type == DIRECT)
+            indexValue = _directValue;
+        else if (_type == INDIRECT)
+            indexValue = _indirectValue;
+        indexValue = Endianness::toInt16BigEndian(indexValue);
+        file.write((char *)(void *)&indexValue, sizeof(indexValue));
+    }
+    return true;
 }

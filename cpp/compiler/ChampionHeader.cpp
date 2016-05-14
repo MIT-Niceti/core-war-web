@@ -1,4 +1,5 @@
 #include "ChampionHeader.hh"
+#include "Endianness.hh"
 #include <iostream>
 
 Champion::Header::Header()
@@ -8,6 +9,19 @@ Champion::Header::Header()
 
 Champion::Header::~Header()
 {
+}
+
+bool Champion::Header::write(std::ofstream &file)
+{
+    file.write((char *)(void *)_header.magicNumber.data(), _header.magicNumber.size());
+
+    file.write(_header.name.data(), _header.name.size());
+
+    _header.programSize = Endianness::toInt32BigEndian(_header.programSize);
+    file.write((char *)(void *)&(_header.programSize), sizeof(_header.programSize));
+
+    file.write(_header.comment.data(), _header.comment.size());
+    return true;
 }
 
 bool Champion::Header::setName(AOutput::MetaName *input)
@@ -22,8 +36,8 @@ bool Champion::Header::setName(AOutput::MetaName *input)
         std::cerr << "Error: '.name' string size exceeeds " << (_header.name.size() - 1) << " characters" << std::endl;
         return false;
     }
-    for (char c : input->value())
-        _header.name.push_back(c);
+    for (unsigned int i = 0; i != input->value().size(); ++i)
+        _header.name[i] = input->value()[i];
     _hasName = true;
     return true;
 }
@@ -40,8 +54,13 @@ bool Champion::Header::setComment(AOutput::MetaComment *input)
         std::cerr << "Error: '.comment' string size exceeeds " << (_header.name.size() - 1) << " characters" << std::endl;
         return false;
     }
-    for (char c : input->value())
-        _header.comment.push_back(c);
+    for (unsigned int i = 0; i != input->value().size(); ++i)
+        _header.comment[i] = input->value()[i];
     _hasComment = true;
     return true;
+}
+
+void Champion::Header::setProgramSize(unsigned int size)
+{
+    _header.programSize = size;
 }

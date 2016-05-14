@@ -2,6 +2,7 @@
 # define	CHAMPION_INSTRUCTION_PARAMETER_HH_
 
 # include "ChampionInstruction.hh"
+# include <cstdint>
 # include <string>
 
 class Champion::Instruction::Parameter
@@ -17,25 +18,30 @@ public:
 
 private:
     eType _type;
-    char _registerNumber;
-    int _directValue;
-    short _indirectValue;
+    int8_t _registerNumber;
+    int32_t _directValue;
+    int16_t _indirectValue;
     std::string _label;
+    bool _isIndex;
 
 public:
     Parameter();
     ~Parameter();
 
-    bool translate(AOutput *);
+    bool translate(AOutput *, bool);
 
-    void setDirectValue(int);
-    void setIndirectValue(short);
+    void setDirectValue(int32_t);
+    void setIndirectValue(int16_t);
 
     eType type() const;
     bool isLabel() const;
     const std::string &label() const;
     unsigned int size() const;
+    bool isIndex() const;
 
+    bool write(std::ofstream &);
+
+private:
     bool _translateRegisterParameter(AOutput::ParameterRegister *);
     bool _translateDirectParameter(AOutput::ParameterDirect *);
     bool _translateIndirectParameter(AOutput::ParameterIndirect *);

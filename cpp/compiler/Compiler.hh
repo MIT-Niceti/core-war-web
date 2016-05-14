@@ -9,10 +9,11 @@ class		Compiler
 {
 private:
     const std::string _inputFile;
+    const std::string _outputFile;
     TokensLines _tokenizedFile;
 
 public:
-    Compiler(const std::string &);
+    Compiler(const std::string &, const std::string &);
     ~Compiler();
 
     bool run();

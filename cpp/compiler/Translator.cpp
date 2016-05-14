@@ -1,6 +1,7 @@
 #include "Translator.hh"
 #include "ParserOutput.hh"
 #include <iostream>
+#include <fstream>
 
 Translator::Translator()
 {
@@ -14,12 +15,21 @@ bool Translator::translate(ParsedLines *parserOutput)
 {
     return _fillOutputStructure(parserOutput) &&
         _translated.sortLabelsAndInstructions() &&
-        _translated.computeLabelValues();
+        _translated.computeLabelValues() &&
+        _translated.computeProgramSize();
 }
 
-bool Translator::write()
+bool Translator::write(const std::string &fileName)
 {
-    return true;
+    std::ofstream file;
+
+    file.open(fileName, std::ios::binary | std::ios::trunc);
+    if (!file.is_open())
+    {
+        std::cerr << "Error: Cannot open output file '" << fileName << "'" << std::endl;
+        return false;
+    }
+    return _translated.write(file);
 }
 
 bool Translator::_fillOutputStructure(ParsedLines *parserOutput)

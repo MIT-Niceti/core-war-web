@@ -5,8 +5,8 @@
 #include <fstream>
 #include <iostream>
 
-Compiler::Compiler(const std::string &inputFile)
-    : _inputFile(inputFile)
+Compiler::Compiler(const std::string &inputFile, const std::string &outputFile)
+    : _inputFile(inputFile), _outputFile(outputFile)
 {
 }
 
@@ -23,7 +23,7 @@ bool Compiler::run()
     _runTokenizer();
     return ((output = analyzer.createTree(_tokenizedFile)) &&
         translator.translate(output) &&
-        translator.write());
+        translator.write(_outputFile));
 }
 
 void Compiler::_runTokenizer()

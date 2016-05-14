@@ -4,14 +4,15 @@
 
 int main(int ac, char **av)
 {
-    if (ac != 2)
+    if (ac != 3)
     {
-        std::cerr << "No input file specified" << std::endl;
+        std::cerr << "Usage: " << av[0] << " <input_file> <output_file>" << std::endl << std::endl;
         return (-1);
     }
 
-    Compiler compiler((std::string(av[1])));
+    std::string input(av[1]), output(av[2]);
 
-    compiler.run();
-    return (0);
+    Compiler compiler(input, output);
+
+    return compiler.run() ? 0 : -1;
 }

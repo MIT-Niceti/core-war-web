@@ -28,7 +28,7 @@ Champion::Instruction::OpCode::eOpCode Champion::Instruction::OpCode::getOpCodeF
     {
         if (_possibleOpCodes[i].name() == name)
         {
-            opCode = static_cast<OpCode::eOpCode>(i);
+            opCode = _possibleOpCodes[i].code();
             break ;
         }
         ++i;

@@ -2,6 +2,7 @@
 #include "ChampionHeader.hh"
 #include "ChampionInstruction.hh"
 #include "ChampionInstructionParameter.hh"
+#include "ChampionInstructionOpCode.hh"
 #include <cstddef>
 #include <iostream>
 
@@ -72,6 +73,7 @@ bool Champion::sortLabelsAndInstructions()
             if (i + 1 < _instructions.size() && !_instructions[i + 1]->hasLabel())
             {
                 instruction->setOpCode(_instructions[i + 1]->opCode());
+                instruction->setParameters(_instructions[i + 1]->parameters());
                 ++i;
             }
             else
@@ -88,6 +90,11 @@ bool Champion::sortLabelsAndInstructions()
     _instructions = reArrangedInstructions;
     _labels = reArrangedLabels;
     return _checkMultipleLabelDefinition();
+}
+
+bool Champion::write(std::ofstream &file)
+{
+    return _header->write(file) && _writeInstructions(file);
 }
 
 bool Champion::computeLabelValues()
@@ -131,6 +138,16 @@ int Champion::_computeLabelJump(int i, int j)
     return i > j ? bytesJump * -1 : bytesJump;
 }
 
+bool Champion::computeProgramSize()
+{
+    unsigned int size = 0;
+
+    for (Instruction *instruction : _instructions)
+        size += instruction->size();
+    _header->setProgramSize(size);
+    return true;
+}
+
 bool Champion::_checkMultipleLabelDefinition()
 {
     for (unsigned int i = 0; i != _labels.size(); ++i)
@@ -151,4 +168,11 @@ void Champion::_initHeader()
 {
     if (!_header)
         _header = new Header();
+}
+
+bool Champion::_writeInstructions(std::ofstream &file)
+{
+    for (Instruction *instruction : _instructions)
+        instruction->write(file);
+    return true;
 }

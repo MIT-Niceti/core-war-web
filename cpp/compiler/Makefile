@@ -28,7 +28,8 @@ SRCS		=	main.cpp				\
 			ChampionInstruction.cpp			\
 			ChampionInstructionOpCode.cpp		\
 			ChampionInstructionParameter.cpp	\
-			ChampionInstructionParameters.cpp
+			ChampionInstructionParameters.cpp	\
+			Endianness.cpp
 
 OBJS		=	$(SRCS:.cpp=.o)
 
