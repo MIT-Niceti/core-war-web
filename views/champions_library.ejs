@@ -6,15 +6,66 @@
   </head>
   <body>
     <% if (user) { %>
-      <h1>Update your champions</h1>
-      <p>Hey <i><%= user.name %></i>, you will be soon able to access your champions library from here</p>
-      <% if (compilerResult) { %>
-        <h2>Raw test result</h2>
-          <p>Compiler result value: <%= compilerResult.status %><p>
-          <p>Compilation logs: <%= compilerResult.logs %><p>
+      <h1>Champions library</h1>
+      <p>Hey <i><%= user.name %></i>, here is your personnal champions library</p>
+
+      <h2>My champions</h2>
+      <% if (champions) { %>
+        <table border="10" style="width:50%">
+          <tr>
+            <td><b>Name</b></td>
+            <td><b>Original input file</b></td>
+            <td><b>Compilation date</b></td>
+            <td><b>Delete</b></td>
+          </tr>
+
+          <% champions.forEach(function(champion) { %>
+            <tr>
+              <td><%= champion.name %></td>
+              <td><%= champion.inputFileName %></td>
+              <td><%= champion.creationDate %></td>
+              <td>
+                <form action="/delete_champion/<%= champion._id %>" method="post">
+                  <button type="submit">Delete</button>
+                </form>
+              </td>
+            </tr>
+          <% }) %>
+
+        </table>
       <% } else { %>
-        <h2>Nope</h2>
+        <p>You don't have any champion in your library</p>
       <% } %>
+
+      <% if (compilationOutput) { %>
+        <h2>Compiler output</h2>
+          <p>Compiler result value: <%= compilationOutput.status %></p>
+          <fieldset style="width:50%">
+            <legend>Compilation logs</legend>
+            <%= compilationOutput.logs %>
+          </fieldset>
+      <% } %>
+
+      <% if (deletedChampion) { %>
+        <h2>Deleted champions</h2>
+        <p>Champion with id <%= deletedChampion._id %> successfully deleted</p>
+      <% } %>
+
+      <h2>Upload a new champion</h2>
+      <form action="/compile_champion" method="post">
+        <div>
+          <label>Champion name :</label>
+          <input type="text" name="username" />
+        </div>
+        <div>
+          <label>Assembly file :</label>
+          <input type="file" name="password" />
+        </div>
+        <div>
+          <button type="submit">Compile</button>
+        </div>
+      </form>
+
       <p>Get back to <a href="/index.html">main page</a></p>
     <% } else { %>
       <h1>An error occured</h1>
