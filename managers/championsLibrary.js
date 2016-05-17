@@ -87,18 +87,24 @@ module.exports.compileChampion = function (params) {
       .then(function (champion) {
         createOutputDirectoryForUser(req.user)
         .then(function (outputDirectory) {
-          console.log('compiled champion path ' + champion.path);
           compilerAdapter.compile(localFilePath, champion.path)
           .then(function (compilationOutput) {
             req.session.compilationOutput = compilationOutput;
-            usersAdapter.addChampion(req.user, champion)
-            .then(function (user) {
-              saveSessionAndRedirect(req, res, params.successRedirect);
-            }).catch(function (error) {
-              champion.remove();
-              pushErrorInUserSession(req, 'add new champion error', error);
+
+            if (compilationOutput.status) {
+              usersAdapter.addChampion(req.user, champion)
+              .then(function (user) {
+                saveSessionAndRedirect(req, res, params.successRedirect);
+              }).catch(function (error) {
+                champion.remove();
+                pushErrorInUserSession(req, 'add new champion error', error);
+                saveSessionAndRedirect(req, res, params.failureRedirect);
+              });
+            } else {
+              pushErrorInUserSession(req, 'invalid champion', 'compilation failure');
               saveSessionAndRedirect(req, res, params.failureRedirect);
-            });
+            }
+
           }).catch(function (error) {
             champion.remove();
             pushErrorInUserSession(req, 'compilation error', error);
@@ -120,13 +126,50 @@ module.exports.compileChampion = function (params) {
   };
 };
 
+function deleteChampion(championId, user) {
+  return new Promise(function (fulfill, reject) {
+    var championToDelete = null;
+
+    for (var i = 0; !championToDelete && i != user.champions.length; ++i) {
+      const champion = user.champions[i];
+
+      if (champion._id.toString() == championId) {
+        user.champions.splice(i, i);
+        championToDelete = champion;
+      }
+    }
+
+    if (championToDelete) {
+      championToDelete.remove(function () {
+        user.save(function (error) {
+          if (error) {
+            reject(error);
+          } else {
+            fulfill(championToDelete);
+          }
+        });
+      });
+    } else {
+      reject('Champion not found');
+    }
+  });
+}
+
 module.exports.deleteChampion = function (params) {
   return function (req, res) {
-    console.log('user want to delete his champion with id ' + req.params.championId);
-    req.session.deletedChampion = { _id: req.params.championId };
-
-    req.session.save(function () {
-      res.redirect(params.successRedirect);
-    });
+    if (!req.params || !req.params.championId) {
+      pushErrorInUserSession(req, 'invalid parameter', 'champion id');
+      saveSessionAndRedirect(req, res, params.failureRedirect);
+    } else {
+      deleteChampion(req.params.championId, req.user)
+      .then(function (deletedChampion) {
+        req.session.deletedChampion = deletedChampion;
+        saveSessionAndRedirect(req, res, params.successRedirect);
+      })
+      .catch(function (error) {
+        pushErrorInUserSession(req, 'cannot delete champion', error);
+        saveSessionAndRedirect(req, res, params.failureRedirect);
+      });
+    }
   };
 };
