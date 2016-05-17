@@ -2,6 +2,8 @@
 #include "Endianness.hh"
 #include <iostream>
 
+const std::vector<unsigned char> Champion::Header::header::magicNumber = { 0xB1, 0x6B, 0x00, 0xB5 };
+
 Champion::Header::Header()
     : _hasName(false), _hasComment(false)
 {
