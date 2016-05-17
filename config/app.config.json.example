@@ -14,5 +14,9 @@
     "port": 27017,
     "username": "dbUsername",
     "password": "dbPassword"
+  },
+  "compilerLibrary": {
+    "upload": "/home/foo/.core_war_web/uploaded/",
+    "compiled": "/home/foo/.core_war_web/compiled/"
   }
 }
