@@ -56,8 +56,8 @@ bool	Arena::loadChampions(std::vector<std::string> &champions)
 	{
 		file.open(*it, std::ifstream::binary | std::ifstream::in);
 		file.read((char *)&header, sizeof(header));
-		header.name[128] = '\0';
-		header.comment[2048] = '\0';
+		header.name[128 - 1] = '\0';
+		header.comment[2048 - 1] = '\0';
 
 		if (isLittleEndian())
 		{
@@ -90,7 +90,7 @@ bool	Arena::loadChampions(std::vector<std::string> &champions)
 	return true;
 }
 
-bool Arena::addEvent(int championId, std::string &op, int wrote, int at, bool reg)
+bool Arena::addEvent(int championId, const std::string &op, int wrote, int at, bool reg)
 {
 	return this->replayManager.addEvent(championId, op, wrote, at, reg);
 }

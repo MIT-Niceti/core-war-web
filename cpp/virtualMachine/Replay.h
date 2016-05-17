@@ -45,7 +45,7 @@ public:
 public:
 	bool saveSnapshot();
 	bool setReplay(std::vector<ChampionRecap> &champions);
-	bool addEvent(int championId, std::string &op,
+	bool addEvent(int championId, const std::string &op,
 					int wrote, int at, bool reg = false);
 	void dumpReplay(void);
 	std::string serialize(int winnerId);

@@ -27,7 +27,7 @@ private:
 	std::string ending();
 public:
 	void setLive(int id);
-	bool addEvent(int championId, std::string &op, int wrote, int at, bool reg = false);
+	bool addEvent(int championId, const std::string &op, int wrote, int at, bool reg = false);
 	bool load(int offset, std::vector<char> &data);
 	bool load(int offset, std::string &data);
 	std::vector<char> get(int offset, int size);
