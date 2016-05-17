@@ -89,7 +89,7 @@ bool Replay::saveSnapshot()
 	return true;
 }
 
-bool Replay::addEvent(int championId, std::string &op,
+bool Replay::addEvent(int championId, const std::string &op,
 						int wrote, int at, bool reg)
 {
 	int		i = 0;
