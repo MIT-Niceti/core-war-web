@@ -1,89 +1,156 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <meta charset="UTF-8">
     <title>Core War Web | User Champions Library</title>
+
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="description" content="">
+        <meta name="author" content="">
+
+        <!-- Bootstrap Core CSS -->
+        <link href="css/bootstrap.min.css" rel="stylesheet">
+
+        <!-- Bootstrap Core CSS RTL-->
+        <link href="css/bootstrap.min.css" rel="stylesheet">
+
+        <!-- Custom CSS -->
+        <link href="css/sb-admin.css" rel="stylesheet">
+        <link href="css/sb-admin.css" rel="stylesheet">
+
+        <!-- Morris Charts CSS -->
+        <link href="css/plugins/morris.css" rel="stylesheet">
+
+        <!-- Custom Fonts -->
+        <link href="font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+        <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+        <!--[if lt IE 9]>
+            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+            <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+        <![endif]-->
   </head>
-  <body>
-    <% if (user) { %>
-      <h1>Champions library</h1>
-      <p>Hey <i><%= user.name %></i>, here is your personnal champions library</p>
+  <div id="wrapper">
 
-      <h2>My champions</h2>
-      <% if (champions && champions.length) { %>
-        <table border="10" style="width:50%">
-          <tr>
-            <td><b>Name</b></td>
-            <td><b>Compilation date</b></td>
-            <td><b>Delete</b></td>
-          </tr>
-
-          <% champions.forEach(function(champion) { %>
-            <tr>
-              <td><%= champion.name %></td>
-              <td><%= champion.creationDate %></td>
-              <td>
-                <form action="/delete_champion/<%= champion._id %>" method="post">
-                  <button type="submit">Delete</button>
-                </form>
-              </td>
-            </tr>
-          <% }) %>
-
-        </table>
-      <% } else { %>
-        <p>You don't have any champion in your library</p>
-      <% } %>
-
-      <% if (errors) { %>
-        <h2>Errors</h2>
-        <table border="10" style="width:50%">
-          <tr>
-            <td><b>Error</b></td>
-            <td><b>Reason</b></td>
-          </tr>
-          <% errors.forEach(function (error) { %>
-            <tr>
-              <td><%= error.request %></td>
-              <td><%= error.reason %></td>
-            </tr>
-          <% }); %>
-        </table>
-      <% } %>
-
-      <% if (compilationOutput) { %>
-        <h2>Compiler output</h2>
-          <p>Compiler result value: <%= compilationOutput.status %></p>
-          <fieldset style="width:50%">
-            <legend>Compilation logs</legend>
-            <%= compilationOutput.logs %>
-          </fieldset>
-      <% } %>
-
-      <% if (deletedChampion) { %>
-        <h2>Deleted champions</h2>
-        <p>Champion with id <%= deletedChampion._id %> successfully deleted</p>
-      <% } %>
-
-      <h2>Upload a new champion</h2>
-      <form id="uploadForm" action="/compile_champion" method="post" encType="multipart/form-data">
-        <div>
-          <label>Champion name :</label>
-          <input type="text" name="championName" />
+    <!-- Navigation -->
+    <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="index.html">Core War Web</a>
         </div>
-        <div>
-          <label>Assembly file :</label>
-          <input type="file" name="assemblyFile" />
+        <!-- Sidebar Menu Items - These collapse to the responsive navigation menu on small screens -->
+        <div class="collapse navbar-collapse navbar-ex1-collapse">
+            <ul class="nav navbar-nav side-nav">
+              <li class="active">
+                  <a href="index.html"><i class="fa fa-fw fa-dashboard"></i> Homepage</a>
+              </li>
+              <li>
+                  <a href="/champions_library.html"><i class="fa fa-fw fa-bar-chart-o"></i> Champions library</a>
+              </li>
+              <li>
+                  <a href="/lobbies.html"><i class="fa fa-fw fa-table"></i> Lobbies</a>
+              </li>
+              <li>
+                  <a href="/user_profile.html"><i class="fa fa-fw fa-edit"></i> Profile</a>
+              </li>
+            </ul>
         </div>
-        <div>
-          <button type="submit">Compile</button>
-        </div>
-      </form>
+        <!-- /.navbar-collapse -->
+    </nav>
 
-      <p>Get back to <a href="/index.html">main page</a></p>
-    <% } else { %>
-      <h1>An error occured</h1>
-        <p>Go back to the <a href="/index.html">main page</a></p>
-    <% } %>
-  </body>
+    <div id="page-wrapper">
+        <div class="container-fluid">
+          <% if (user) { %>
+            <h1>Champions library</h1>
+            <p>Hey <i><%= user.name %></i>, here is your personnal champions library</p>
+
+            <h2>My champions</h2>
+            <% if (champions && champions.length) { %>
+              <table border="10" style="width:50%">
+                <tr>
+                  <td><b>Name</b></td>
+                  <td><b>Compilation date</b></td>
+                  <td><b>Delete</b></td>
+                </tr>
+
+                <% champions.forEach(function(champion) { %>
+                  <tr>
+                    <td><%= champion.name %></td>
+                    <td><%= champion.creationDate %></td>
+                    <td>
+                      <form action="/delete_champion/<%= champion._id %>" method="post">
+                        <button type="submit">Delete</button>
+                      </form>
+                    </td>
+                  </tr>
+                <% }) %>
+
+              </table>
+            <% } else { %>
+              <p>You don't have any champion in your library</p>
+            <% } %>
+
+            <% if (errors) { %>
+              <h2>Errors</h2>
+              <table border="10" style="width:50%">
+                <tr>
+                  <td><b>Error</b></td>
+                  <td><b>Reason</b></td>
+                </tr>
+                <% errors.forEach(function (error) { %>
+                  <tr>
+                    <td><%= error.request %></td>
+                    <td><%= error.reason %></td>
+                  </tr>
+                <% }); %>
+              </table>
+            <% } %>
+
+            <% if (compilationOutput) { %>
+              <h2>Compiler output</h2>
+                <p>Compiler result value: <%= compilationOutput.status %></p>
+                <fieldset style="width:50%">
+                  <legend>Compilation logs</legend>
+                  <%= compilationOutput.logs %>
+                </fieldset>
+            <% } %>
+
+            <% if (deletedChampion) { %>
+              <h2>Deleted champions</h2>
+              <p>Champion with id <%= deletedChampion._id %> successfully deleted</p>
+            <% } %>
+
+            <h2>Upload a new champion</h2>
+            <form id="uploadForm" action="/compile_champion" method="post" encType="multipart/form-data">
+              <div>
+                <label>Champion name :</label>
+                <input type="text" name="championName" />
+              </div>
+              <div>
+                <label>Assembly file :</label>
+                <input type="file" name="assemblyFile" />
+              </div>
+              <div>
+                <button type="submit">Compile</button>
+              </div>
+            </form>
+
+            <p>Get back to <a href="/index.html">main page</a></p>
+          <% } else { %>
+            <h1>An error occured</h1>
+              <p>Go back to the <a href="/index.html">main page</a></p>
+          <% } %>
+        </div>
+        <!-- /.container-fluid -->
+    </div>
+    <!-- /#page-wrapper -->
+
 </html>
