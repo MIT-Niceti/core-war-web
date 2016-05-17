@@ -1,55 +1,128 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <meta charset="UTF-8">
     <title>Core War Web | Index</title>
+
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="description" content="">
+        <meta name="author" content="">
+
+        <!-- Bootstrap Core CSS -->
+        <link href="css/bootstrap.min.css" rel="stylesheet">
+
+        <!-- Bootstrap Core CSS RTL-->
+        <link href="css/bootstrap.min.css" rel="stylesheet">
+
+        <!-- Custom CSS -->
+        <link href="css/sb-admin.css" rel="stylesheet">
+        <link href="css/sb-admin.css" rel="stylesheet">
+
+        <!-- Morris Charts CSS -->
+        <link href="css/plugins/morris.css" rel="stylesheet">
+
+        <!-- Custom Fonts -->
+        <link href="font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+        <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+        <!--[if lt IE 9]>
+            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+            <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+        <![endif]-->
   </head>
-  <body>
-    <h1>Core War Web - Index</h1>
-    <% if (user) { %>
-      <p>Hey <i><%= user.name %></i>, click on the link to <a href="/logout">log out</a></p>
-      <p>You can access and edit your <a href="/user_profile.html">user profile</a></p>
-      <p>You can access and edit your <a href="/champions_library.html">champions library</a></p>
-      <p>You can access the <a href="/lobbies.html">lobbies</a> and look for a game</p>
-    <% } else { %>
-      <h2>Already have an account?</h2>
-        Log into the system by filling the following form:
-      <form action="/login" method="post">
-        <div>
-          <label>Username :</label>
-          <input type="text" name="username" />
+  <div id="wrapper">
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="index.html">Core War Web</a>
         </div>
-        <div>
-          <label>Password :</label>
-          <input type="password" name="password" />
+        <!-- Sidebar Menu Items - These collapse to the responsive navigation menu on small screens -->
+        <div class="collapse navbar-collapse navbar-ex1-collapse">
+            <ul class="nav navbar-nav side-nav">
+              <li class="active">
+                  <a href="index.html"><i class="fa fa-fw fa-dashboard"></i> Homepage</a>
+              </li>
+              <li>
+                  <a href="/champions_library.html"><i class="fa fa-fw fa-bar-chart-o"></i> Champions library</a>
+              </li>
+              <li>
+                  <a href="/lobbies.html"><i class="fa fa-fw fa-table"></i> Lobbies</a>
+              </li>
+              <li>
+                  <a href="/user_profile.html"><i class="fa fa-fw fa-edit"></i> Profile</a>
+              </li>
+            </ul>
         </div>
-        <div>
-          <button type="submit">Login</button>
+        <!-- /.navbar-collapse -->
+    </nav>
+
+    <div id="page-wrapper">
+
+        <div class="container-fluid">
+          <h1>Core War Web - Index</h1>
+          <% if (user) { %>
+            <div class="row">
+              <p>Hey <i><%= user.name %></i>, click on the link to <a href="/logout">log out</a></p>
+              <p>You can access and edit your <a href="/user_profile.html">user profile</a></p>
+              <p>You can access and edit your <a href="/champions_library.html">champions library</a></p>
+              <p>You can access the <a href="/lobbies.html">lobbies</a> and look for a game</p>
+            </div>
+          <% } else { %>
+            <div class="row">
+              <h2>Already have an account?</h2>
+                Log into the system by filling the following form:
+              <form action="/login" method="post">
+                <div>
+                  <label>Username :</label>
+                  <input type="text" name="username" />
+                </div>
+                <div>
+                  <label>Password :</label>
+                  <input type="password" name="password" />
+                </div>
+                <div>
+                  <button type="submit">Login</button>
+                </div>
+              </form>
+              <h2>Nope? Do you want to create one?</h2>
+              Create an account in our system by filling the following form:
+              <form action="/sign-up" method="post">
+                <div>
+                  <label>Username :</label>
+                  <input type="text" name="username" />
+                </div>
+                <div>
+                  <label>Email :</label>
+                  <input type="email" name="email" />
+                </div>
+                <div>
+                  <label>Password :</label>
+                  <input type="password" name="password" />
+                </div>
+                <div>
+                  <label>Confirmation :</label>
+                  <input type="password" name="confirmation" />
+                </div>
+                <div>
+                  <button type="submit">Sign-up</button>
+                </div>
+              </form>
+            </div>
+          <% } %>
+            <!-- Page Heading -->
+            <!-- /.row -->
         </div>
-      </form>
-      <h2>Nope? Do you want to create one?</h2>
-      Create an account in our system by filling the following form:
-      <form action="/sign-up" method="post">
-        <div>
-          <label>Username :</label>
-          <input type="text" name="username" />
-        </div>
-        <div>
-          <label>Email :</label>
-          <input type="email" name="email" />
-        </div>
-        <div>
-          <label>Password :</label>
-          <input type="password" name="password" />
-        </div>
-        <div>
-          <label>Confirmation :</label>
-          <input type="password" name="confirmation" />
-        </div>
-        <div>
-          <button type="submit">Sign-up</button>
-        </div>
-      </form>
-    <% } %>
-  </body>
+        <!-- /.container-fluid -->
+    </div>
+    <!-- /#page-wrapper -->
 </html>
