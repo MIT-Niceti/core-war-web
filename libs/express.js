@@ -15,6 +15,7 @@ module.exports = function initExpress(conf) {
 
   require('./ejs')(app, conf);
   require('./mongoose.session')(app, conf);
+  require('./expressFileUpload')(app);
 
   return app;
 };

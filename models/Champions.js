@@ -3,33 +3,19 @@
 const mongoose = require('../libs/mongoose');
 
 //
-// Init model dependancy
-const ChampionsModel = require('./Champions');
-
-//
 // Describe user schema
 const Schema = mongoose.Schema;
-const usersSchema = new Schema({
+const championsSchema = new Schema({
   name: {
-    type: String,
-    required: true,
-    unique: true,
-  },
-  password: {
     type: String,
     required: true,
     unique: false,
   },
-  email: {
+  path: {
     type: String,
     required: true,
     unique: true,
   },
-  champions: [{
-      type: Schema.Types.ObjectId,
-      ref: 'champions',
-    },
-  ],
   creationDate: {
     type: Date,
     default: Date.now,
@@ -40,8 +26,8 @@ const usersSchema = new Schema({
 
 //
 // Init and export model
-const usersModel = mongoose.model('users', usersSchema);
+const championsModel = mongoose.model('champions', championsSchema);
 
 //
 // Export model
-module.exports = usersModel;
+module.exports = championsModel;
