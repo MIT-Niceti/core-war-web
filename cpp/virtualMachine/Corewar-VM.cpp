@@ -10,10 +10,11 @@ std::string startMachine(std::vector<std::string> &champions)
 	std::vector<std::string> championss;
 
 	std::cout << "BEGIN LOAD" << std::endl;
-	championss.push_back("C:\\Users\\norman_e\\Pictures\\champion.txt");
-	championss.push_back("C:\\Users\\norman_e\\Pictures\\forker.txt");
+	championss.push_back("C:\\Users\\norman_e\\Pictures\\reference_champion.out");
+	championss.push_back("C:\\Users\\norman_e\\Pictures\\forker.out");
 	std::cout << "DONE LOAD" << std::endl;
 	if (arena->setupArena(championss))
 		return (arena->start());
+	std::cout << "DONE GAME" << std::endl;
 	return "";
 }

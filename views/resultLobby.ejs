@@ -16,7 +16,7 @@
             Member: <i><%= member.name %></i>
           </p>
     <% });} %>
-    <svg width="2000" height="1800">
+    <svg width="2000" height="1000">
     </svg>
     <p id="waiting"> Waiting for the game to be finished! <p>
     <% if (status) { %>
@@ -42,6 +42,12 @@
   </script>
   <script charset="UTF-8">
       var lobby = io.connect('http://localhost:8080/<%= lobby._id %>');
+      lobby.on('cancel', function (data) {
+        alert('cancelled!');
+        window.location = '/lobbies.html';
+      });
+      if (lobby.connected == false)
+        console.log(lobby);
       if (d3)
       {
         lobby.on('<%= lobby._id %>', function (data) {

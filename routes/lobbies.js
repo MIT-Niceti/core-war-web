@@ -5,9 +5,12 @@ const ensureLoggedOut = require('../libs/connectEnsureLogin').ensureLoggedOut;
 
 const lobbyController = require('../controllers/lobbies');
 
-module.exports = function initLobbiesRoutes(app, conf) {
+
+
+module.exports = function initLobbiesRoutes(app, conf, libs) {
   //
   //// GET requests
+  var io = libs.io;
 
   app.get('/lobbies.html',
   ensureLoggedIn('/index.html'),
@@ -16,7 +19,6 @@ module.exports = function initLobbiesRoutes(app, conf) {
     {
       lobbyController.getLobbies(req, res)
       .then(function (data) {
-        console.log('Data to lobbies: ' + data);
         res.render('lobbies', data);
       });
     }
@@ -62,9 +64,11 @@ module.exports = function initLobbiesRoutes(app, conf) {
               data.status = status.status;
             else
               res.redirect('/lobbies.html/' + req.params.lobby + '/view');
-            console.log('Lobby: ' + data.lobby);
             res.render('profileLobby', data);
           });
+        }
+        else {
+          res.redirect('lobbies.html/');
         }
       });
     }
@@ -118,7 +122,7 @@ module.exports = function initLobbiesRoutes(app, conf) {
               {
                 lobbyController.removeUser(req.params.lobby, req.user.id).then(function (lobby)
                 {
-                  res.redirect('/lobbies.html/' + req.params.lobby + '/view');
+                  res.redirect('/lobbies.html/');
                 });
               }
             }
@@ -145,6 +149,13 @@ module.exports = function initLobbiesRoutes(app, conf) {
               {
                 lobbyController.removeLobby(req.params.lobby).then(function ()
                 {
+                  var room = io.of('/' + req.params.lobby).emit('cancel', { cancel : 'canceled' });
+                  if (io.sockets.adapter.rooms[req.params.lobby] >= 1) {
+                    io.sockets.clients(req.params.lobby).forEach(function (s) {
+                      if (s)
+                        s.leave(req.params.lobby);
+                    });
+                  }
                   res.redirect('/lobbies.html/');
                 });
               } else {
@@ -193,6 +204,7 @@ module.exports = function initLobbiesRoutes(app, conf) {
   app.post('/addLobby',
   ensureLoggedIn('/index.html'),
      lobbyController.addLobby({
+       io: libs.io,
        successRedirect: '/lobbies.html',
        failureRedirect: '/index.html',
      })

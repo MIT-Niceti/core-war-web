@@ -17,9 +17,11 @@ module.exports = function initArenaRoutes(app, conf, libs) {
         try {
           console.log('Rendering');
           var lobby = io.of('/' + req.params.lobby).on('connection', function (socket) {
-              console.log('lolol');
-              socket.emit(req.params.lobby, { coreDump : data });
-            });
+            lobby.emit(req.params.lobby, { coreDump : data });
+            socket.emit(req.params.lobby, { coreDump : data });
+          });
+//          io.of('/' + req.params.lobby).emit(req.params.lobby, { coreDump : data });
+        //  io.sockets.in(req.params.lobby).emit(req.params.lobby, { coreDump : data });
           res.redirect('/lobbies.html/' + req.params.lobby + '/result');
         }
         catch (e) {

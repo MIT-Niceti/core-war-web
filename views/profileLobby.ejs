@@ -37,4 +37,13 @@
         <p>Go back to the <a href="/index.html">main page</a></p>
     <% } %>
   </body>
+  <script src="/socket.io/socket.io.js"></script>
+  <script charset="UTF-8">
+    var lobby = io.connect('http://localhost:8080/<%= lobby._id %>');
+    if (lobby.connected == false)
+      console.log("Not connected");
+    console.log(lobby);
+    if (lobby.connected == true)
+      console.log("connected");
+  </script>
 </html>

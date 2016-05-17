@@ -4,8 +4,10 @@
 
 void Champion::fork(Process &process, int pc, Arena &arena)
 {
-	if (this->processes.size() > 1000)
+	if (this->processes.size() > 1000) {
+		std::cout << "Not forking " << this->processes.size() << "processes" << std::endl;
 		return;
+	}
 	arena.load(pc, *(this->code));
 	this->processes.push_back(Process(this, pc, &process));
 }

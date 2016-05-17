@@ -58,6 +58,7 @@ bool	Arena::loadChampions(std::vector<std::string> &champions)
 		file.read((char *)&header, sizeof(header));
 		header.name[128] = '\0';
 		header.comment[2048] = '\0';
+
 		if (isLittleEndian())
 		{
 			header.magic = _byteswap_ulong(header.magic);

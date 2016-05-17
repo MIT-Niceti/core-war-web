@@ -7,9 +7,9 @@ class Arena;
 struct s_header
 {
 	uint32_t		magic;
-	char	name[128 + 1];
-	int		prog_size;
-	char	comment[2048 + 1];
+	char	name[128];
+	unsigned int		prog_size;
+	char	comment[2048];
 };
 
 class Champion
