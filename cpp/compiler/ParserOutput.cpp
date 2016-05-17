@@ -118,26 +118,29 @@ AOutput *ParserOutput::finalizeOutput()
         ++it;
     }
 
-    if (_output.back()->type() == ParserOutput::eType::META_NAME)
-        static_cast<AOutput::MetaName *>(_output.back())->metamorhose();
-    else if (_output.back()->type() == ParserOutput::eType::META_COMMENT)
-        static_cast<AOutput::MetaComment *>(_output.back())->metamorhose();
-    else if (_output.back()->type() == ParserOutput::eType::INSTRUCTION)
-        static_cast<AOutput::Instruction *>(_output.back())->metamorhose();
-    else if (_output.back()->type() == ParserOutput::eType::LABEL)
-        static_cast<AOutput::Label *>(_output.back())->metamorhose();
-    else if (_output.back()->type() == ParserOutput::eType::INSTRUCTION_AND_LABEL)
-        static_cast<AOutput::InstructionAndLabel *>(_output.back())->metamorhose();
-    else if (_output.back()->type() == ParserOutput::eType::INSTRUCTION_NAME)
-        static_cast<AOutput::InstructionName *>(_output.back())->metamorhose();
-    else if (_output.back()->type() == ParserOutput::eType::REGISTER_PARAMETER)
-        static_cast<AOutput::ParameterRegister *>(_output.back())->metamorhose();
-    else if (_output.back()->type() == ParserOutput::eType::DIRECT_PARAMETER)
-        static_cast<AOutput::ParameterDirect *>(_output.back())->metamorhose();
-    else if (_output.back()->type() == ParserOutput::eType::INDIRECT_PARAMETER)
-        static_cast<AOutput::ParameterIndirect *>(_output.back())->metamorhose();
-
-    return _output.back();
+    if (!_output.empty())
+    {
+        if (_output.back()->type() == ParserOutput::eType::META_NAME)
+            static_cast<AOutput::MetaName *>(_output.back())->metamorhose();
+        else if (_output.back()->type() == ParserOutput::eType::META_COMMENT)
+            static_cast<AOutput::MetaComment *>(_output.back())->metamorhose();
+        else if (_output.back()->type() == ParserOutput::eType::INSTRUCTION)
+            static_cast<AOutput::Instruction *>(_output.back())->metamorhose();
+        else if (_output.back()->type() == ParserOutput::eType::LABEL)
+            static_cast<AOutput::Label *>(_output.back())->metamorhose();
+        else if (_output.back()->type() == ParserOutput::eType::INSTRUCTION_AND_LABEL)
+            static_cast<AOutput::InstructionAndLabel *>(_output.back())->metamorhose();
+        else if (_output.back()->type() == ParserOutput::eType::INSTRUCTION_NAME)
+            static_cast<AOutput::InstructionName *>(_output.back())->metamorhose();
+        else if (_output.back()->type() == ParserOutput::eType::REGISTER_PARAMETER)
+            static_cast<AOutput::ParameterRegister *>(_output.back())->metamorhose();
+        else if (_output.back()->type() == ParserOutput::eType::DIRECT_PARAMETER)
+            static_cast<AOutput::ParameterDirect *>(_output.back())->metamorhose();
+        else if (_output.back()->type() == ParserOutput::eType::INDIRECT_PARAMETER)
+            static_cast<AOutput::ParameterIndirect *>(_output.back())->metamorhose();
+        return _output.back();
+    }
+    return NULL;
 }
 
 ParserOutput::eType ParserOutput::_getRuleTypeFromRuleName(const std::string &ruleName) const
