@@ -14,9 +14,9 @@ void AOutput::ParameterIndirect::metamorhose()
 {
     for (ParserOutput::element *element : *_elements)
     {
-        if (element->token->raw() == ":")
+        if (element->token->type() == Token::LABEL)
             _isLabel = true;
-        else
+        else if (element->token->type() != Token::BLANK_SPACE)
         {
             if (_isLabel)
                 _value.append(element->token->raw());

@@ -8,7 +8,7 @@ class Champion::Header
 private:
     struct header
     {
-        const std::vector<unsigned char> magicNumber = { 0xB1, 0x6B, 0x00, 0xB5 };
+        static const std::vector<unsigned char> magicNumber;
         std::vector<char> name = std::vector<char>(128, '\0');
         unsigned int programSize = 0;
         std::vector<char> comment = std::vector<char>(2048, '\0');
