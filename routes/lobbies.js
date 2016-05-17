@@ -5,9 +5,12 @@ const ensureLoggedOut = require('../libs/connectEnsureLogin').ensureLoggedOut;
 
 const lobbyController = require('../controllers/lobbies');
 
-module.exports = function initLobbiesRoutes(app, conf) {
+
+
+module.exports = function initLobbiesRoutes(app, conf, libs) {
   //
   //// GET requests
+  var io = libs.io;
 
   app.get('/lobbies.html',
   ensureLoggedIn('/index.html'),
@@ -16,11 +19,34 @@ module.exports = function initLobbiesRoutes(app, conf) {
     {
       lobbyController.getLobbies(req, res)
       .then(function (data) {
-        console.log('Data to lobbies: ' + data);
         res.render('lobbies', data);
       });
     }
   }
+  );
+
+  app.get('/lobbies.html/:lobby/result',
+  ensureLoggedIn('/index.html'),
+    function (req, res) {
+      console.log('Result');
+      lobbyController.getLobby(req.params.lobby)
+      .then(function (data) {
+        if (data)
+        {
+          flag = 0;
+          lobbyController.getUserStatus(req.params.lobby, req.user.id).then(function (status)
+          {
+            data.user = req.user;
+            if (status)
+              data.status = status.status;
+            else
+              data.status = 'nothing';
+            console.log('End result');
+            res.render('resultLobby', data);
+          });
+        }
+      });
+    }
   );
 
   app.get('/lobbies.html/:lobby/view',
@@ -37,10 +63,12 @@ module.exports = function initLobbiesRoutes(app, conf) {
             if (status)
               data.status = status.status;
             else
-              data.status = 'nothing';
-            console.log('Lobby: ' + data.lobby);
+              res.redirect('/lobbies.html/' + req.params.lobby + '/view');
             res.render('profileLobby', data);
           });
+        }
+        else {
+          res.redirect('lobbies.html/');
         }
       });
     }
@@ -56,7 +84,6 @@ module.exports = function initLobbiesRoutes(app, conf) {
           flag = 0;
           lobbyController.getUserStatus(req.params.lobby, req.user.id).then(function (status)
           {
-            console.log('Step 1 status ' + status.status);
             data.user = req.user;
             if (status)
             {
@@ -95,7 +122,7 @@ module.exports = function initLobbiesRoutes(app, conf) {
               {
                 lobbyController.removeUser(req.params.lobby, req.user.id).then(function (lobby)
                 {
-                  res.redirect('/lobbies.html/' + req.params.lobby + '/view');
+                  res.redirect('/lobbies.html/');
                 });
               }
             }
@@ -122,6 +149,13 @@ module.exports = function initLobbiesRoutes(app, conf) {
               {
                 lobbyController.removeLobby(req.params.lobby).then(function ()
                 {
+                  var room = io.of('/' + req.params.lobby).emit('cancel', { cancel : 'canceled' });
+                  if (io.sockets.adapter.rooms[req.params.lobby] >= 1) {
+                    io.sockets.clients(req.params.lobby).forEach(function (s) {
+                      if (s)
+                        s.leave(req.params.lobby);
+                    });
+                  }
                   res.redirect('/lobbies.html/');
                 });
               } else {
@@ -146,7 +180,7 @@ module.exports = function initLobbiesRoutes(app, conf) {
             if (data)
             {
               data.user = req.user;
-              res.redirect('/lobbies.html/' + req.params.lobby + '/view');
+              res.redirect('/lobbies.html/' + req.params.lobby + '/result');
             }
           });
         }
@@ -170,6 +204,7 @@ module.exports = function initLobbiesRoutes(app, conf) {
   app.post('/addLobby',
   ensureLoggedIn('/index.html'),
      lobbyController.addLobby({
+       io: libs.io,
        successRedirect: '/lobbies.html',
        failureRedirect: '/index.html',
      })

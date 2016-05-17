@@ -9,3 +9,13 @@ cpp/build
 *.map
 *.tlog
 *.vcxproj
+*.sdf
+old/build/binding.sln
+*.suo
+old/build/Release/obj/virtualMachine/vc120.pdb
+*.exp
+old/build/Release/virtualMachine.node
+*.pdb
+old/build/Release/virtualMachine.lib
+*.filters
+old/Corewar-VM/ipch/corewar-vm-c003b2e2/corewar-vm-f9000d8f.ipch

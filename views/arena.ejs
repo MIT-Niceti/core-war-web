@@ -8,11 +8,88 @@
     <% if (user) { %>
       <h1>Arena</h1>
       <p>Hey <i><%= user.name %></i>, you will be soon able to watch your champions fighting with others from this page</p>
+      <p>Object: <%= decodeURI(arena).slice(1, 30) %></p>
       <p>Get back to <a href="/index.html">main page</a></p>
-      <p><%= arena %></p>
+      <svg width="2000" height="1800">
+      </svg>
     <% } else { %>
       <h1>An error occured</h1>
         <p>Go back to the <a href="/index.html">main page</a></p>
     <% } %>
   </body>
+
+  <script src="https://d3js.org/d3.v3.min.js" charset="UTF-8">
+  </script>
+  <script charset="UTF-8">
+  try {
+      var Arena = JSON.parse(`<%- arena.replace('&#34;', '"') %>`);
+    }catch(e){
+        console.log(e); //error in the above string(in this case,yes)!
+    }
+
+    function loadChampions()
+    {
+      var colourTab = [ "red", "blue", "green", "yellow", "brown" ];
+      var championColour = [];
+      var i = 0;
+      var counter = 0;
+
+      console.log('Champions count: ' + Arena.replay.nbPlayers);
+      Arena.replay.champions.forEach(function (champion) {
+        championColour.push(colourTab[i++]);
+        counter = champion.entryPoint;
+        champion.init.forEach(function (val) {
+          d3.select("#r" + counter).transition().duration(500).style('fill', championColour[champion.id - 1]);
+          ++counter;
+          if (counter == 6 * 1024)
+            counter = 0;
+        });
+      });
+      return championColour;
+    }
+
+    function doTurn(championColour)
+    {
+      var currentCycle = 0;
+      var counter = 0;
+      var flag = 0;
+
+      Arena.replay.modifList.forEach(function (snapshot) {
+//        setInterval(function () {
+          snapshot.forEach(function (modif) {
+            d3.select("#r" + modif.position).transition().duration(3000).style('fill', championColour[modif.championId - 1]);
+          });
+//        }, 10000);
+      });
+      console.log('Done');
+    }
+
+
+
+    var svg = d3.select('svg');
+    var initArray = [];
+
+    for (var i = 0; i < 6 * 1024; i++)
+      initArray.push({ at: i })
+    var rects = svg.selectAll('rect').data(initArray);
+    var newRects = rects.enter();
+    newRects.append('rect')
+    .filter(function(d) {
+      return d.at >= 0;
+    })
+    .attr('y', function(d, i) {
+      return Math.floor((d.at / 128)) * 16;
+    })
+    .attr('x', function(d, i) {
+      return Math.floor((d.at % 128)) * 13;
+    })
+    .attr('id', function(d, i){
+      return 'r' + d.at;
+    })
+    .attr('height', 10)
+    .attr('width', 10)
+    .transition().duration(200);
+    var tab = loadChampions();
+    doTurn(tab);
+  </script>
 </html>

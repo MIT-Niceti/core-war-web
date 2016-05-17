@@ -58,6 +58,7 @@ bool	Arena::loadChampions(std::vector<std::string> &champions)
 		file.read((char *)&header, sizeof(header));
 		header.name[128] = '\0';
 		header.comment[2048] = '\0';
+
 		if (isLittleEndian())
 		{
 			header.magic = _byteswap_ulong(header.magic);
@@ -77,6 +78,7 @@ bool	Arena::loadChampions(std::vector<std::string> &champions)
 		recap.id = id;
 		recap.size = header.prog_size;
 		championsRecap.push_back(recap);
+		this->addEvent(id, std::string("Fork"), header.prog_size, pc);
 		this->champions.push_back(Champion(header, code, id++, pc));
 		this->champions.back().addProcess(pc);
 		load(pc, *code);
@@ -84,24 +86,13 @@ bool	Arena::loadChampions(std::vector<std::string> &champions)
 		pc += delta;
 	}
 	this->setReplay(championsRecap);
+	this->replayManager.saveSnapshot();
 	return true;
 }
 
 bool Arena::addEvent(int championId, std::string &op, int wrote, int at, bool reg)
 {
-	std::string name = "";
-
-	for (std::list<Champion>::iterator it = champions.begin(); it != champions.end(); ++it)
-	{
-		if (it->id == championId)
-		{
-			name = it->getName();
-			break;
-		}
-	}
-	if (name == "")
-		return false;
-	return this->replayManager.addEvent(this->cycle_total, championId, name, op, wrote, at, reg);
+	return this->replayManager.addEvent(championId, op, wrote, at, reg);
 }
 
 void	Arena::setLive(int id)
@@ -143,8 +134,9 @@ bool	Arena::checkLive()
 std::string	Arena::ending()
 {
 	this->dumpArena();
+//	this->replayManager.dumpReplay();
 	std::cout << "Champion " << champions.begin()->getName() << " with id "
-				<< champions.begin()->id << " has won!" << std::endl;
+				<< champions.begin()->id << " has won! At cycle: " << this->cycle_total << std::endl;
 	return this->replayManager.serialize(champions.begin()->id);
 }
 
@@ -164,6 +156,8 @@ std::string	Arena::start(void)
 			}
 		}
 		++this->cycle_total;
+		if (this->cycle_total % 50000)
+			this->replayManager.saveSnapshot();
 		if (this->cycle_total % this->cycle_to_die == 0)
 		{
 //			dumpArena();

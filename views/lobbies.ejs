@@ -8,7 +8,6 @@
     <% if (user) { %>
       <h1>Game lobbies</h1>
       <p>Hey <i><%= user.name %></i>, you will be soon able to create a lobby (an arena) and start a game from this page</p>
-      <p>You can temporary go to an hard coded version of the <a href="/arena.html">arena</a></p>
     <% if (lobbies) {
       lobbies.forEach(function (lobby) { %>
         <p>Lobby: <i><%= lobby.name %></i>, max players: <i><%= lobby.maxPlayers %>  <a href="/lobbies.html/<%= lobby._id %>/view">Profile</a></i></p>

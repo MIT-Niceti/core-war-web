@@ -125,7 +125,6 @@ module.exports.getLobby = function (id) {
           if (++counter == lobby.members.length)
           {
             lobby.users = data;
-            console.log('Lo0bby is : ' + lobby);
             fullfill({ lobby: lobby });
           }
         });
@@ -166,8 +165,21 @@ module.exports.createLobby = function (params) {
     checkAndCreateLobby(req.body.name, req.user.id, req.body.maxPlayers)
       .then(function (lobby) {
         req.session.save(function () {
-          res.redirect(params.successRedirect);
+          console.log('connected ' + lobby._id);
+          params.io.of('/' + lobby._id).on('disconnect', function (socket)
+                {
+                  console.log('proutiprouta');
+                }
+              );
+          /*params.io.of('/' + lobby._id).on('disconnect', function (socket)
+              {
+                  console.log('prout PROUT PROUT PROUT');
+              }
+            );*/
+
         });
+        console.log('created socket');
+        res.redirect(params.successRedirect);
       }).catch(function (error) {
         res.redirect(params.failureRedirect);
       }

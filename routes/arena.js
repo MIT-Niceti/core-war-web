@@ -5,15 +5,29 @@ const ensureLoggedOut = require('../libs/connectEnsureLogin').ensureLoggedOut;
 
 const arenaController = require('../adapters/virtualMachine');
 
-module.exports = function initArenaRoutes(app, conf) {
+module.exports = function initArenaRoutes(app, conf, libs) {
   //
   //// GET requests
+  var io = libs.io;
 
-  app.get('/arena.html',
+  app.get('/arena.html/:lobby',
   ensureLoggedIn('/index.html'),
     function (req, res) {
       arenaController.launchVirtualMachine().then(function (data) {
-        res.render('arena', { user: req.user, arena: data });
+        try {
+          console.log('Rendering');
+          var lobby = io.of('/' + req.params.lobby).on('connection', function (socket) {
+            lobby.emit(req.params.lobby, { coreDump : data });
+            socket.emit(req.params.lobby, { coreDump : data });
+          });
+//          io.of('/' + req.params.lobby).emit(req.params.lobby, { coreDump : data });
+        //  io.sockets.in(req.params.lobby).emit(req.params.lobby, { coreDump : data });
+          res.redirect('/lobbies.html/' + req.params.lobby + '/result');
+        }
+        catch (e) {
+          console.log('Error: ' + e);
+          res.redirect('/lobbies.html/');
+        }
       });
     }
   );
