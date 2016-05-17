@@ -10,11 +10,10 @@
       <p>Hey <i><%= user.name %></i>, here is your personnal champions library</p>
 
       <h2>My champions</h2>
-      <% if (champions) { %>
+      <% if (champions && champions.length) { %>
         <table border="10" style="width:50%">
           <tr>
             <td><b>Name</b></td>
-            <td><b>Original input file</b></td>
             <td><b>Compilation date</b></td>
             <td><b>Delete</b></td>
           </tr>
@@ -22,7 +21,6 @@
           <% champions.forEach(function(champion) { %>
             <tr>
               <td><%= champion.name %></td>
-              <td><%= champion.inputFileName %></td>
               <td><%= champion.creationDate %></td>
               <td>
                 <form action="/delete_champion/<%= champion._id %>" method="post">
@@ -35,6 +33,22 @@
         </table>
       <% } else { %>
         <p>You don't have any champion in your library</p>
+      <% } %>
+
+      <% if (errors) { %>
+        <h2>Errors</h2>
+        <table border="10" style="width:50%">
+          <tr>
+            <td><b>Error</b></td>
+            <td><b>Reason</b></td>
+          </tr>
+          <% errors.forEach(function (error) { %>
+            <tr>
+              <td><%= error.request %></td>
+              <td><%= error.reason %></td>
+            </tr>
+          <% }); %>
+        </table>
       <% } %>
 
       <% if (compilationOutput) { %>
@@ -52,14 +66,14 @@
       <% } %>
 
       <h2>Upload a new champion</h2>
-      <form action="/compile_champion" method="post">
+      <form id="uploadForm" action="/compile_champion" method="post" encType="multipart/form-data">
         <div>
           <label>Champion name :</label>
-          <input type="text" name="username" />
+          <input type="text" name="championName" />
         </div>
         <div>
           <label>Assembly file :</label>
-          <input type="file" name="password" />
+          <input type="file" name="assemblyFile" />
         </div>
         <div>
           <button type="submit">Compile</button>
