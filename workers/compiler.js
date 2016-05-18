@@ -6,7 +6,10 @@ module.exports.compile = function (inputFile, outputFile) {
 
     console.log(compilationStatus);
     try {
-      fulfill(JSON.parse(compilationStatus));
+      const output = JSON.parse(compilationStatus);
+
+      output.logs = '';
+      fulfill(output);
     } catch (e) {
       reject('Error: ' + e.message);
     }

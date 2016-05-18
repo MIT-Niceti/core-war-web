@@ -45,7 +45,8 @@ void jsonizeCompilerOutput(bool status, std::string &output)
         else if (c != '\r')
             escapedOutputLog.push_back(c);
     }
-    json = "{ \"status\": " + (status ? std::string("true") : std::string("false")) + ", \"logs\": \"" + escapedOutputLog + "\" }";
+    // json = "{ \"status\": " + (status ? std::string("true") : std::string("false")) + ", \"logs\": \"" + escapedOutputLog + "\" }";
+    json = "{ \"status\": " + (status ? std::string("true") : std::string("false")) + " }";
     output = json;
 }
 
