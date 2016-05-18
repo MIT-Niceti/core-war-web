@@ -164,12 +164,58 @@ module.exports.deleteChampion = function (params) {
       deleteChampion(req.params.championId, req.user)
       .then(function (deletedChampion) {
         req.session.deletedChampion = deletedChampion;
-        saveSessionAndRedirect(req, res, params.successRedirect);
+        checkAndRemoveSelectedChampion(deletedChampion, req.user)
+        .then(function (user) {
+          req.user = user;
+          saveSessionAndRedirect(req, res, params.successRedirect);
+        }).catch(function (error) {
+          pushErrorInUserSession(req, 'error while deselecting champion', error);
+          saveSessionAndRedirect(req, res, params.failureRedirect);
+        });
       })
       .catch(function (error) {
         pushErrorInUserSession(req, 'cannot delete champion', error);
         saveSessionAndRedirect(req, res, params.failureRedirect);
       });
+    }
+  };
+};
+
+function checkAndRemoveSelectedChampion(champion, user) {
+  return new Promise(function (fulfill, reject) {
+    if (user.selectedChampion && user.selectedChampion._id.equals(champion._id)) {
+      user.selectedChampion = null;
+      user.save(function (error) {
+        if (error) {
+          reject(error);
+        } else {
+          fulfill(user);
+        }
+      });
+    } else {
+      fulfill(user);
+    }
+  });
+}
+
+module.exports.selectChampion = function (params) {
+  return function (req, res) {
+    if (!req.params || !req.params.championId) {
+      console.log('invalid parameters');
+      pushErrorInUserSession(req, 'invalid parameter', 'champion id');
+      saveSessionAndRedirect(req, res, params.failureRedirect);
+    } else {
+
+      usersAdapter.selectChampion(req.user, req.params.championId)
+      .then(function (user) {
+        req.user = user;
+        saveSessionAndRedirect(req, res, params.successRedirect);
+      })
+      .catch(function (error) {
+        pushErrorInUserSession(req, 'cannot select champion', error);
+        saveSessionAndRedirect(req, res, params.failureRedirect);
+      });
+
     }
   };
 };

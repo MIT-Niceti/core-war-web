@@ -11,3 +11,7 @@ module.exports.compileChampion = function (params) {
 module.exports.deleteChampion = function (params) {
   return championsLibraryManager.deleteChampion(params);
 };
+
+module.exports.selectChampion = function (params) {
+  return championsLibraryManager.selectChampion(params);
+};

@@ -37,4 +37,12 @@ module.exports = function initChampionsLibraryRoutes(app, conf) {
       failureRedirect: '/champions_library.html',
     })
   );
+
+  app.post('/select_champion/:championId',
+    ensureLoggedIn('/index.html'),
+    championsLibraryController.selectChampion({
+      successRedirect: '/champions_library.html',
+      failureRedirect: '/champions_library.html',
+    })
+  );
 };

@@ -25,6 +25,10 @@ const usersSchema = new Schema({
     required: true,
     unique: true,
   },
+  selectedChampion: {
+    type: Schema.Types.ObjectId,
+    ref: 'champions',
+  },
   champions: [{
       type: Schema.Types.ObjectId,
       ref: 'champions',

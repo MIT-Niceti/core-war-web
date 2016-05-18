@@ -2,15 +2,28 @@ const UsersModel = require('../models/Users');
 const championsAdapter = require('./champions');
 
 module.exports.findById = function (id) {
-  return UsersModel.findOne({ _id: id }).populate('champions');
+  return UsersModel.findOne({ _id: id }).populate('champions').populate('selectedChampion');
 };
 
 module.exports.findByName = function (name) {
-  return UsersModel.findOne({ name: name }).populate('champions');
+  return UsersModel.findOne({ name: name }).populate('champions').populate('selectedChampion');
 };
 
 module.exports.findByEmail = function (email) {
-  return UsersModel.findOne({ email: email }).populate('champions');
+  return UsersModel.findOne({ email: email }).populate('champions').populate('selectedChampion');
+};
+
+module.exports.selectChampion = function (user, champion) {
+  return new Promise(function (fulfill, reject) {
+    user.selectedChampion = champion;
+    user.save(function (error) {
+      if (error) {
+        reject(error);
+      } else {
+        fulfill(module.exports.findById(user._id));
+      }
+    });
+  });
 };
 
 module.exports.addChampion = function (user, champion) {

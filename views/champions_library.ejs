@@ -78,6 +78,8 @@
                 <tr>
                   <td><b>Name</b></td>
                   <td><b>Compilation date</b></td>
+                  <td><b>Selected</b></td>
+                  <td><b>Select</b></td>
                   <td><b>Delete</b></td>
                 </tr>
 
@@ -85,6 +87,16 @@
                   <tr>
                     <td><%= champion.name %></td>
                     <td><%= champion.creationDate %></td>
+                    <td>
+                      <% if (user.selectedChampion && user.selectedChampion._id.equals(champion._id)) { %>
+                        yes
+                      <% } %>
+                    </td>
+                    <td>
+                      <form action="/select_champion/<%= champion._id %>" method="post">
+                        <button type="submit">Select</button>
+                      </form>
+                    </td>
                     <td>
                       <form action="/delete_champion/<%= champion._id %>" method="post">
                         <button type="submit">Delete</button>
@@ -94,6 +106,7 @@
                 <% }) %>
 
               </table>
+
             <% } else { %>
               <p>You don't have any champion in your library</p>
             <% } %>
