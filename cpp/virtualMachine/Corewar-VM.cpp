@@ -12,6 +12,8 @@ std::string startMachine(std::vector<std::string> &champions)
 /*	std::cout << "BEGIN LOAD" << std::endl;
 	championss.push_back("C:\\Users\\norman_e\\Pictures\\reference_champion.out");
 	championss.push_back("C:\\Users\\norman_e\\Pictures\\forker.out");*/
+	for (std::vector<std::string>::iterator it = champions.begin(); it != champions.end(); it++)
+		std::cout << "Path champion: " << *it << std::endl;
 	std::cout << "DONE LOAD" << std::endl;
 	if (arena->setupArena(champions))
 		return (arena->start());

@@ -123,6 +123,7 @@
       if (d3)
       {
         lobby.on('<%= lobby._id %>', function (data) {
+          lobby.emit('erase', { message: "erase" });
         try {
             var Arena = JSON.parse(data.coreDump);
           }catch(e){

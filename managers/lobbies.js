@@ -24,25 +24,13 @@ function checkAndCreateLobby(name, creator, maxPlayers)
   });
 }
 
-module.exports.getUsersChampion = function (lobby)
+module.exports.getUsersChampion = function (lobbyId)
 {
-  return new Promise(function (fullfill, reject) {
-    var data = [];
-    counter = 0;
-    LobbiesAdapter.findById(id).then(function (lobby) {
-      lobby.members.forEach(function (userId) {
-        var data = [];
-        var elem = {};
-        counter = 0;
-        UsersAdapter.findById(userId).then(function (user) {
-          if (user.selectedChampion != null)
-            data.push(user.selectedChampion);
-        });
+  /*return new Promise(function (fullfill, reject) {
+    LobbiesAdapter.getLobby(lobbyId).then(function (lobby) {
 
-        fullfill({ championArray: data });
-      });
-    });
-  });
+    })
+  });*/
 };
 
 module.exports.removeUser = function (id, userId)
@@ -141,7 +129,6 @@ module.exports.getLobby = function (id) {
       lobby.users = [];
       lobby.members.forEach(function (userId) {
         UsersAdapter.findById(userId).then(function (user) {
-          //console.log('found: ' + user);
           data.push(user);
           if (++counter == lobby.members.length)
           {

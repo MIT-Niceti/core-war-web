@@ -10,8 +10,11 @@ module.exports.compile = function (inputFile, outputFile) {
       reject('Compiler crash: ' + e.message);
     }
 
+    console.log(compilationStatus);
     try {
-      fulfill(JSON.parse(compilationStatus));
+      const output = JSON.parse(compilationStatus);
+
+      fulfill(output);
     } catch (e) {
       reject('Json parsing error: ' + e.message);
     }
