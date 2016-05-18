@@ -86,7 +86,7 @@ bool	Arena::loadChampions(std::vector<std::string> &champions)
 		pc += delta;
 	}
 	this->setReplay(championsRecap);
-	this->replayManager.saveSnapshot();
+//	this->replayManager.saveSnapshot();
 	return true;
 }
 
@@ -134,7 +134,7 @@ bool	Arena::checkLive()
 std::string	Arena::ending()
 {
 	this->dumpArena();
-//	this->replayManager.dumpReplay();
+	this->replayManager.saveSnapshot();
 	std::cout << "Champion " << champions.begin()->getName() << " with id "
 				<< champions.begin()->id << " has won! At cycle: " << this->cycle_total << std::endl;
 	return this->replayManager.serialize(champions.begin()->id);
@@ -157,10 +157,12 @@ std::string	Arena::start(void)
 		}
 		++this->cycle_total;
 		if (this->cycle_total % 50000)
-			this->replayManager.saveSnapshot();
-		if (this->cycle_total % this->cycle_to_die == 0)
 		{
 //			dumpArena();
+//			this->replayManager.saveSnapshot();
+		}
+		if (this->cycle_total % this->cycle_to_die == 0)
+		{
 			if (checkLive() == false)
 				return ending();
 		}

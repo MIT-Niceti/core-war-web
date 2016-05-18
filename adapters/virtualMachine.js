@@ -1,5 +1,5 @@
 const virtualMachineWorker = require('../workers/virtualMachine');
 
-module.exports.launchVirtualMachine = function () {
-  return virtualMachineWorker.launch();
+module.exports.launchVirtualMachine = function (championArray) {
+  return virtualMachineWorker.launch(championArray);
 };
