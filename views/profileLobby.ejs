@@ -94,8 +94,9 @@
               else if (status == 'creator')
               { %>
                 <h2>Admin</h2>
+                <% if (lobby.users.length > 1) { %>
                 <p>Start this lobby   <a href="/arena.html/<%= lobby._id %>">Start</a></p>
-
+                <% } %>
                 <p>Erase this lobby  <a href="/lobbies.html/<%= lobby._id %>/erase">Erase</a></p>
               <% }
           } %>

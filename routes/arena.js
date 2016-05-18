@@ -15,18 +15,27 @@ module.exports = function initArenaRoutes(app, conf, libs) {
   app.get('/arena.html/:lobby',
   ensureLoggedIn('/index.html'),
     function (req, res) {
-      var champions = [];
-      lobbiesManager.getUsersChampion(req.params.lobby).then(function (retArray)
+      console.log('Starting');
+      lobbiesManager.getLobby(req.params.lobby).then(function (result)
       {
-        arenaController.launchVirtualMachine(retArray.championArray).then(function (data) {
+        var champions = [];
+        if (result.lobby.creator != req.user.id || result.lobby.users.length < 2)
+          res.redirect('/lobbies.html/');
+        result.lobby.users.forEach(function (user) {
+          if (user.selectedChampion)
+            champions.push(user.selectedChampion.path);
+        });
+        arenaController.launchVirtualMachine(champions).then(function (data) {
           try {
-            console.log('Rendering');
             var lobby = io.of('/' + req.params.lobby).on('connection', function (socket) {
               lobby.emit(req.params.lobby, { coreDump: data });
               socket.emit(req.params.lobby, { coreDump: data });
             });
-
-            res.redirect('/lobbies.html/' + req.params.lobby + '/result');
+            lobbiesManager.removeLobby(req.params.lobby).then(function (){
+              result.status = 'creator';
+              result.user = req.user;
+              res.render('resultLobby', result);
+            });
           }
           catch (e) {
             console.log('Error: ' + e);
