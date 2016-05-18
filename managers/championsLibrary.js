@@ -37,15 +37,13 @@ module.exports.retrieveUserChampionsLibrary = function (req, res) {
   });
 };
 
-function downloadAssemblyFile(req, res)
-{
+function downloadAssemblyFile(req, res) {
   return new Promise(function (fulfill, reject) {
-    if (req.files && req.files.assemblyFile) {
+    if (req.files && req.files.assemblyFile && req.files.assemblyFile.data[0] !== undefined) {
       const assemblyFile = req.files.assemblyFile;
       const inputDirectoryPath = path.join(compilerConfig.upload, req.user._id.toString());
       const inputFilePath = path.join(inputDirectoryPath, assemblyFile.name);
 
-      // console.log(inputDirectoryPath);
       mkdir(inputDirectoryPath, function (error) {
         if (error) {
           reject('Cannot create champion input directory');
@@ -81,6 +79,7 @@ function createOutputDirectoryForUser(user) {
 
 module.exports.compileChampion = function (params) {
   return function (req, res) {
+
     downloadAssemblyFile(req, res)
     .then(function (localFilePath) {
       championsAdapter.createChampion(req.body.championName, path.join(compilerConfig.compiled, req.user._id.toString()))
@@ -97,31 +96,31 @@ module.exports.compileChampion = function (params) {
                 saveSessionAndRedirect(req, res, params.successRedirect);
               }).catch(function (error) {
                 champion.remove();
-                pushErrorInUserSession(req, 'add new champion error', error);
+                pushErrorInUserSession(req, 'Champion creation', error);
                 saveSessionAndRedirect(req, res, params.failureRedirect);
               });
             } else {
-              pushErrorInUserSession(req, 'invalid champion', 'compilation failure');
+              pushErrorInUserSession(req, 'Invalid champion', 'compilation failure');
               saveSessionAndRedirect(req, res, params.failureRedirect);
             }
 
           }).catch(function (error) {
             champion.remove();
-            pushErrorInUserSession(req, 'compilation error', error);
+            pushErrorInUserSession(req, 'Compilation error', error);
             saveSessionAndRedirect(req, res, params.failureRedirect);
           });
         }).catch(function (error) {
           champion.remove();
-          pushErrorInUserSession(req, 'cannot create output directory', error);
+          pushErrorInUserSession(req, 'Output directory', error);
           saveSessionAndRedirect(req, res, params.failureRedirect);
         });
       }).catch(function (error) {
-        pushErrorInUserSession(req, 'cannot create champion', error);
+        pushErrorInUserSession(req, 'Champion creation', error);
         saveSessionAndRedirect(req, res, params.failureRedirect);
       });
     }).catch(function (error) {
-      pushErrorInUserSession(error);
-      res.status(500).send(error);
+      pushErrorInUserSession(req, 'File downloader', error);
+      saveSessionAndRedirect(req, res, params.failureRedirect);
     });
   };
 };
@@ -150,7 +149,7 @@ function deleteChampion(championId, user) {
         });
       });
     } else {
-      reject('Champion not found');
+      reject('champion not found');
     }
   });
 }
@@ -169,12 +168,12 @@ module.exports.deleteChampion = function (params) {
           req.user = user;
           saveSessionAndRedirect(req, res, params.successRedirect);
         }).catch(function (error) {
-          pushErrorInUserSession(req, 'error while deselecting champion', error);
+          pushErrorInUserSession(req, 'Champion unselection', error);
           saveSessionAndRedirect(req, res, params.failureRedirect);
         });
       })
       .catch(function (error) {
-        pushErrorInUserSession(req, 'cannot delete champion', error);
+        pushErrorInUserSession(req, 'Cannot delete champion', error);
         saveSessionAndRedirect(req, res, params.failureRedirect);
       });
     }
@@ -201,18 +200,17 @@ function checkAndRemoveSelectedChampion(champion, user) {
 module.exports.selectChampion = function (params) {
   return function (req, res) {
     if (!req.params || !req.params.championId) {
-      console.log('invalid parameters');
-      pushErrorInUserSession(req, 'invalid parameter', 'champion id');
+      pushErrorInUserSession(req, 'Invalid parameter', 'champion id');
       saveSessionAndRedirect(req, res, params.failureRedirect);
-    } else {
 
+    } else {
       usersAdapter.selectChampion(req.user, req.params.championId)
       .then(function (user) {
         req.user = user;
         saveSessionAndRedirect(req, res, params.successRedirect);
       })
       .catch(function (error) {
-        pushErrorInUserSession(req, 'cannot select champion', error);
+        pushErrorInUserSession(req, 'Champion selection', error);
         saveSessionAndRedirect(req, res, params.failureRedirect);
       });
 
