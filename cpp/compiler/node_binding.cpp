@@ -38,7 +38,7 @@ void jsonizeCompilerOutput(bool status, std::string &output)
 
     for (char c : output)
     {
-        if (c == '\'' || c == '\"' || '\\')
+        if (c == '\'' || c == '\"' || c == '\\')
             escapedOutputLog.push_back('\\');
         if (c == '\n')
             escapedOutputLog += "\\n";
