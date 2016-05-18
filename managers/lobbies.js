@@ -24,9 +24,26 @@ function checkAndCreateLobby(name, creator, maxPlayers)
   });
 }
 
-module.exports.getUserChampion = function (lobby)
+module.exports.getUsersChampion = function (lobby)
 {
-}
+  return new Promise(function (fullfill, reject) {
+    var data = [];
+    counter = 0;
+    LobbiesAdapter.findById(id).then(function (lobby) {
+      lobby.members.forEach(function (userId) {
+        var data = [];
+        var elem = {};
+        counter = 0;
+        UsersAdapter.findById(userId).then(function (user) {
+          if (user.selectedChampion != null)
+            data.push(user.selectedChampion);
+        });
+
+        fullfill({ championArray: data });
+      });
+    });
+  });
+};
 
 module.exports.removeUser = function (id, userId)
 {
