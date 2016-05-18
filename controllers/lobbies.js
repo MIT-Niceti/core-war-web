@@ -23,6 +23,10 @@ module.exports.removeUser = function (lobby, userId) {
   return lobbiesManager.removeUser(lobby, userId);
 };
 
+module.exports.getUsersChampion = function (lobby) {
+  return lobbiesManager.getUsersChampion(lobby);
+}
+
 module.exports.getUserStatus = function (lobby, userId) {
   return lobbiesManager.getUserStatus(lobby, userId);
 };

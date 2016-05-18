@@ -13,7 +13,10 @@ module.exports = function initArenaRoutes(app, conf, libs) {
   app.get('/arena.html/:lobby',
   ensureLoggedIn('/index.html'),
     function (req, res) {
-      arenaController.launchVirtualMachine().then(function (data) {
+      var champions = []
+      champions.push('C:\\Users\\norman_e\\Pictures\\forker.out')
+      champions.push('C:\\Users\\norman_e\\Pictures\\reference_champion.out')
+      arenaController.launchVirtualMachine(champions).then(function (data) {
         try {
           console.log('Rendering');
           var lobby = io.of('/' + req.params.lobby).on('connection', function (socket) {

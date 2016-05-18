@@ -24,6 +24,10 @@ function checkAndCreateLobby(name, creator, maxPlayers)
   });
 }
 
+module.exports.getUserChampion = function (lobby)
+{
+}
+
 module.exports.removeUser = function (id, userId)
 {
   return new Promise(function (fullfill, reject) {
