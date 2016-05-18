@@ -38,15 +38,14 @@ void jsonizeCompilerOutput(bool status, std::string &output)
 
     for (char c : output)
     {
-        if (c == '\'' || c == '\"')
+        if (c == '\'' || c == '\"' || '\\')
             escapedOutputLog.push_back('\\');
         if (c == '\n')
             escapedOutputLog += "\\n";
         else if (c != '\r')
             escapedOutputLog.push_back(c);
     }
-    // json = "{ \"status\": " + (status ? std::string("true") : std::string("false")) + ", \"logs\": \"" + escapedOutputLog + "\" }";
-    json = "{ \"status\": " + (status ? std::string("true") : std::string("false")) + " }";
+    json = "{ \"status\": " + (status ? std::string("true") : std::string("false")) + ", \"logs\": \"" + escapedOutputLog + "\" }";
     output = json;
 }
 

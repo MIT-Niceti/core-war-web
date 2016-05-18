@@ -4,12 +4,8 @@ module.exports.compile = function (inputFile, outputFile) {
   return new Promise(function (fulfill, reject) {
     const compilationStatus = compilerAddon.compile(inputFile, outputFile);
 
-    console.log(compilationStatus);
     try {
-      const output = JSON.parse(compilationStatus);
-
-      output.logs = '';
-      fulfill(output);
+      fulfill(JSON.parse(compilationStatus));
     } catch (e) {
       reject('Error: ' + e.message);
     }
